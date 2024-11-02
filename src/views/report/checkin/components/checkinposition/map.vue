@@ -24,13 +24,19 @@ export default {
     };
   },
   methods: {
-    initializeMap() {
+
+    getPosition(longitude,latitude){
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.initializeMap(this.longitude,this.latitude); 
+    },
+    initializeMap(longitude,latitude) {
       // 模拟经纬度
-      const fakeLatLng = [this.longitude, this.latitude];
+      const LatLng = [longitude, latitude];
 
       // 初始化地图
       this.map = new AMap.Map(this.$refs.mapContainer, {
-        center: fakeLatLng, // 默认中心点设置为模拟经纬度
+        center: LatLng, // 默认中心点设置为模拟经纬度
         zoom: 13,
         resizeEnable: true, // 启用自动调整大小
       });
@@ -44,13 +50,13 @@ export default {
 
       // 添加标记
       this.marker = new AMap.Marker({
-        position: fakeLatLng,
+        position: LatLng,
         icon: customIcon,
         map: this.map,
       });
 
       // 调用逆地理编码服务
-      this.getAddress(fakeLatLng);
+      this.getAddress(LatLng);
     },
 
     // 使用逆地理编码 API 获取地址信息
@@ -75,7 +81,7 @@ export default {
     }
   },
   mounted() {
-    this.initializeMap(); // 页面加载时立即初始化地图
+    // this.initializeMap(this.longitude,this.latitude); // 页面加载时立即初始化地图
   },
   beforeDestroy() {
     this.destroyMap(); // 在组件销毁前清理地图

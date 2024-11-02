@@ -115,7 +115,7 @@
             <div class="blue-box"></div>
             <span class="title-text">打卡位置</span>
           </div>
-          <NormalMap />
+          <NormalMap ref="NormalMap"/>
         </div>
       </el-form>
     </div>
@@ -144,6 +144,7 @@ export default {
     handleCancel() {
       this.visible = false;
     },
+
      // 根据id获取用户打卡位置信息
     async fetchCheckinPosition(statusId) {
       try {
@@ -166,6 +167,8 @@ export default {
                   "0"
                 )}-${String(data.checkInDate[2]).padStart(2, "0")}`
               : "";
+              console.log(data.longitude,data.latitude);
+          this.$refs.NormalMap.getPosition(data.longitude,data.latitude);
         } else {
           console.error("获取用户信息失败:", response.data.msg);
         }

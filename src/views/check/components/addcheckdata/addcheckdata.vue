@@ -116,7 +116,7 @@
           <div class="BaseInfoDetail">
             <el-form-item label="提交日期">
               <el-date-picker
-                v-model="form.checkDate"
+                v-model="form.uploadDate"
                 type="date"
                 format="YYYY-MM-DD"
                 placeholder="请选择提交日期"
@@ -192,7 +192,7 @@ export default {
         isVirusNucleicAcidTestDone: false, // BOOLEAN, -- 是否已进行病毒核酸检测
         isVirusCultureIsolationDone: false, // BOOLEAN, -- 是否已进行病毒培养分离
         isSerologicalTestDone: false, // BOOLEAN, -- 是否已进行血清学检测
-        checkDate:null,
+        uploadDate:null,
       },
       rules: {},
       userId: null,
@@ -242,6 +242,7 @@ export default {
           isVirusAntigenTestDone: this.form.isVirusAntigenTestDone,
           isVirusCultureIsolationDone: this.form.isVirusCultureIsolationDone,
           isVirusNucleicAcidTestDone: this.form.isVirusNucleicAcidTestDone,
+          uploadDate: this.form.uploadDate,
         };
 
         // 调接口
@@ -282,7 +283,7 @@ export default {
         isVirusNucleicAcidTestDone: false, // BOOLEAN, -- 是否已进行病毒核酸检测
         isVirusCultureIsolationDone: false, // BOOLEAN, -- 是否已进行病毒培养分离
         isSerologicalTestDone: false, // BOOLEAN, -- 是否已进行血清学检测
-        checkDate:null,
+        uploadDate:null,
       };
     },
   },

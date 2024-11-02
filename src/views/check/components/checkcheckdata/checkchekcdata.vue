@@ -86,7 +86,7 @@
           <div class="BaseInfoDetail">
               <el-form-item label="报告日期">
               <el-date-picker
-                v-model="form.checkDate"
+                v-model="form.uploadDate"
                 type="date"
                 format="YYYY-MM-DD"
                 placeholder="请选择报告日期"  
@@ -200,7 +200,7 @@ export default {
         isVirusNucleicAcidTestDone: false,
         isVirusCultureIsolationDone: false,
         isSerologicalTestDone: false,
-        checkDate:null,
+        uploadDate:null,
       },
       reports: {
         hasStoolTest: [],
@@ -294,6 +294,8 @@ export default {
           this.form.isVirusNucleicAcidTestDone=response.data.data.isVirusNucleicAcidTestDone;          
           this.form.isSerologicalTestDone = response.data.data.isSerologicalTestDone;
           this.form.isVirusCultureIsolationDone = response.data.data.isVirusCultureIsolationDone;
+          const uploadDateArray = response.data.data.uploadDate;
+            this.form.uploadDate = uploadDateArray.map(num => String(num).padStart(2, '0')).join('-');
         }
         console.log(this.form);
         }catch(error){

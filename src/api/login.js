@@ -7,7 +7,7 @@ export const loginUser = async (params) => {
 };
 
 // 修改密码接口
-export const changePassword = async (params) => {
-  const response = await axiosInstance.post("/medicalStaff/userpPassword/change", params);
+export const changePassword = async (data) => {
+  const response = await axiosInstance.post("/medicalStaff/userpPassword/change", data);
   return response;
 };
