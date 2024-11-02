@@ -27,6 +27,7 @@
               placeholder=""
               clearable
               :disabled="allDisabled"
+              :disabled-date="disabledAfterDate"
             ></el-date-picker>
           </el-form-item>
         </div>
@@ -587,6 +588,13 @@ watch: {
     },
     handleCancel() {
       this.allDisabled = true;
+    },
+    disabledAfterDate(date) {
+      const today = new Date();
+      // 设置为今天的开始时间
+      today.setHours(0, 0, 0, 0);
+      // 返回日期是否在今天之后
+      return date.getTime() > today.getTime();
     },
     getInitialForm() {
       return {

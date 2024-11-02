@@ -1,15 +1,17 @@
 <template>
- <div class="container">
-  <div class="title">疾病诊断准确率报表</div>
+  <div class="container">
+    <div class="title">疾病诊断准确率报表</div>
     <div class="cards-container">
       <div class="card-container">
-          <div class="card" v-for="(item, index) in cardData" :key="index">
-              <div class="card-title">{{ item.title }}</div>
-              <div class="card-bottom">
-                  <div class="card-data" :id="'card-data-' + index">{{ item.data }}</div>
-                  <img :src="item.imgSrc" alt=""/>
-              </div>
+        <div class="card" v-for="(item, index) in cardData" :key="index">
+          <div class="card-title">{{ item.title }}</div>
+          <div class="card-bottom">
+            <div class="card-data" :id="'card-data-' + index">
+              {{ item.data }}
+            </div>
+            <img :src="item.imgSrc" alt="" />
           </div>
+        </div>
       </div>
     </div>
     <div class="chart-container">
@@ -22,18 +24,29 @@
 <script>
 import { ref, onMounted } from "vue";
 import * as echarts from "echarts/core";
-import { GridComponent, TooltipComponent, LegendComponent } from "echarts/components";
+import {
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+} from "echarts/components";
 import { BarChart } from "echarts/charts";
 import { CanvasRenderer } from "echarts/renderers";
-import { CountUp } from 'countup.js';
-import allusernumber from '@/assets/screenimgs/allusernumber.svg';
-import allcheckinnumber from '@/assets/screenimgs/allcheckinnumber.svg';
-import todaycheckin from '@/assets/screenimgs/todaycheckin.svg';
-import todayhealth from '@/assets/screenimgs/todayhealth.svg';
-import todaydisease from '@/assets/screenimgs/todaydisease.svg';
-import todaynotcheckin from '@/assets/screenimgs/todaynotcheckin.svg';
-import { getstrike } from '@/api/report/screen.js'
-echarts.use([GridComponent, BarChart, CanvasRenderer, TooltipComponent, LegendComponent]);
+import { CountUp } from "countup.js";
+import allusernumber from "@/assets/screenimgs/allusernumber.svg";
+import allcheckinnumber from "@/assets/screenimgs/allcheckinnumber.svg";
+import todaycheckin from "@/assets/screenimgs/todaycheckin.svg";
+import todayhealth from "@/assets/screenimgs/todayhealth.svg";
+import todaydisease from "@/assets/screenimgs/todaydisease.svg";
+import todaynotcheckin from "@/assets/screenimgs/todaynotcheckin.svg";
+import { getstrike } from "@/api/report/screen.js";
+
+echarts.use([
+  GridComponent,
+  BarChart,
+  CanvasRenderer,
+  TooltipComponent,
+  LegendComponent,
+]);
 
 export default {
   setup() {
@@ -45,35 +58,41 @@ export default {
 
     const chart = ref(null);
 
-    onMounted(() => {
-      cardData.value.forEach((item, index) => {
-        const countUp = new CountUp(`card-data-${index}`, item.data);
-        countUp.start();
-      });
-
-      const myChart = echarts.init(chart.value);
-
+    const updateChart = (data) => {
       const diseaseTypeName = [
-        "新型冠状病毒",
+        "新型冠状病毒感染",
         "流感",
         "鼠疫",
         "感染性腹泻",
         "炭疽",
         "结核病",
-        "登革热(蚊媒传染病)",
-        "疟疾(蚊媒传染病)",
-        "森林脑炎(蜱媒传染病)",
-        "发热伴血小板减少综合征(蜱媒传染病)",
+        "登革热（蚊媒传染病）",
+        "疟疾（蚊媒传染病）",
+        "森林脑炎（蜱媒传染病）",
+        "发热伴血小板减少综合征（蜱媒传染病）",
         "斑疹伤寒",
-        "流行性热出血"
+        "流行性热出血",
       ];
-      const dataHigh = [80, 70, 60, 90, 50, 85, 75, 65, 95, 55, 80, 100];
-      const dataLow = [50, 65, 55, 70, 40, 65, 65, 55, 80, 45, 70, 80];
+
+      const dataHigh = new Array(diseaseTypeName.length).fill(0);
+      const dataLow = new Array(diseaseTypeName.length).fill(0);
+
+      data.list.forEach((item) => {
+        const index = diseaseTypeName.indexOf(item.diseaseTypeName);
+        if (index !== -1) {
+          dataHigh[index] = item.predictDiagnoseNumber || 0;
+          dataLow[index] = item.actuallyDiagnoseNumber || 0;
+        } else {
+          console.warn("Disease type not found:", item.diseaseTypeName);
+        }
+      });
+
       const option = {
         color: ["#424242", "#285AC8"],
         legend: {
-          data: ["诊断数", "确诊数"],
+          data: ["预测数", "确诊数"],
           top: "5%",
+          selectedMode: false,
         },
         grid: {
           left: "4%",
@@ -99,29 +118,31 @@ export default {
         },
         tooltip: {
           trigger: "axis",
-          axisPointer: { type: "shadow" },
           formatter: function (params) {
-            let highValue = null;
-            let lowValue = null;
-            params.forEach((param) => {
-              if (param.seriesName === "诊断数" && param.value !== '-') highValue = param.value;
-              if (param.seriesName === "确诊数" && param.value !== '-') lowValue = param.value;
-            });
+            const diseaseName = params[0].name;
+            const diagnosisCount =
+              params[0].seriesName === "预测数"
+                ? dataHigh[params[0].dataIndex] || 0
+                : dataLow[params[0].dataIndex] || 0;
 
-            let tooltipContent = `${params[0].name}<br>`;
-            params.forEach((param) => {
-              tooltipContent += `${param.seriesName}: ${param.value}<br>`;
-            });
+            const confirmedCount = params[1]
+              ? dataLow[params[1].dataIndex] || 0
+              : 0;
 
-            if (highValue !== null && lowValue !== null) {
-              const accuracyRate = ((lowValue / highValue) * 100).toFixed(2);
-              tooltipContent += `准确率: ${accuracyRate}%`;
-            }
 
-            return tooltipContent;
+            const accuracy =
+              diagnosisCount > 0
+                ? ((confirmedCount / diagnosisCount) * 100).toFixed(2)
+                : "0.00";
+
+            return `${diseaseName} <br/>预测数 ${diagnosisCount.toFixed(
+              2
+            )} 人<br/>确诊数 ${confirmedCount.toFixed(
+              2
+            )} 人<br/>准确率 ${accuracy}%`;
           },
           backgroundColor: "#FFFFFF",
-          borderColor: "#DDDDDD",
+          borderColor: "#FFFFFF",
           borderWidth: 1,
           padding: [10, 10],
           textStyle: {
@@ -130,15 +151,19 @@ export default {
           },
           extraCssText: "border-radius: 4px;",
         },
+
         series: [
           {
-            name: "诊断数",
+            name: "预测数",
             data: dataHigh,
             type: "bar",
             barWidth: "25%",
-            barCategoryGap: "100%",
-            stack: "0%",
             itemStyle: {
+              borderRadius: [7, 7, 0, 0],
+            },
+            showBackground: true,
+            backgroundStyle: {
+              color: "#F4F4F4",
               borderRadius: [7, 7, 0, 0],
             },
           },
@@ -147,26 +172,58 @@ export default {
             data: dataLow,
             type: "bar",
             barWidth: "25%",
-            barCategoryGap: "100%",
-            stack: "10%",
             itemStyle: {
+              borderRadius: [7, 7, 0, 0],
+            },
+            showBackground: true,
+            backgroundStyle: {
+              color: "#F4F4F4",
               borderRadius: [7, 7, 0, 0],
             },
           },
         ],
       };
 
+      const myChart = echarts.init(chart.value);
       myChart.setOption(option);
-
       window.addEventListener("resize", () => {
         myChart.resize();
       });
+    };
+
+    onMounted(async () => {
+      try {
+        const response = await getstrike();
+        console.log("API Response:", response);
+        console.log("response.data.data:", response.data.data);
+        if (response.data.code === 1 && response.data) {
+          cardData.value[0].data = response.data.data.confirmedNumber || 0;
+          cardData.value[1].data = response.data.data.diagnosedNumber || 0;
+          console.log(" cardData.value[0].data:", cardData.value[0].data);
+          console.log(" cardData.value[1].data:", cardData.value[1].data);
+
+          cardData.value[2].data =
+            (
+              (response.data.data.confirmedNumber /
+                response.data.data.diagnosedNumber) *
+              100
+            ).toFixed(2) + "%" || 0.00 ;
+
+          updateChart(response.data.data);
+        } else {
+          console.error("Failed to fetch data:", response);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     });
 
     return { cardData, chart };
   },
 };
 </script>
+
+
 
 <style scoped>
 .container {
@@ -240,7 +297,7 @@ export default {
 }
 
 .card {
-  background: #FAFAFA;
+  background: #fafafa;
   border-radius: 10px;
   height: 130px;
   width: 420px;
@@ -251,7 +308,7 @@ export default {
   margin: 15px;
   font-size: 14px;
   font-weight: 550;
-  color: #4A4A4A;
+  color: #4a4a4a;
 }
 
 .card-bottom {

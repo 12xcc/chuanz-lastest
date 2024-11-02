@@ -27,6 +27,7 @@
               placeholder=""
               clearable
               :disabled="allDisabled"
+              :disabled-date="disabledAfterDate"
             ></el-date-picker>
           </el-form-item>
         </div>
@@ -478,6 +479,7 @@ export default {
         otherRegistrationDetails: null, // 登记分类其他详情
         plagueSubtype: null, // 鼠疫子类
         anthraxSubtype: null, // 炭疽子类
+        diagnosisDate:null,
       },
 
       rules: {
@@ -563,6 +565,13 @@ export default {
         });
       });
     },
+    disabledAfterDate(date) {
+      const today = new Date();
+      // 设置为今天的开始时间
+      today.setHours(0, 0, 0, 0);
+      // 返回日期是否在今天之后
+      return date.getTime() > today.getTime();
+    },
     handleReset() {
       console.log("诊断结果重置");
       this.form = this.getInitialForm();
@@ -583,6 +592,7 @@ export default {
         otherRegistrationDetails: null, // 登记分类其他详情
         plagueSubtype: null, // 鼠疫子类
         anthraxSubtype: null, // 炭疽子类
+        diagnosisDate:null,
       };
     },
     getData() {

@@ -22,7 +22,6 @@
         class="form-container"
         ref="form"
         :rules="rules"
-        
       >
         <div class="BaseInfo">
           <div class="title-container">
@@ -38,7 +37,7 @@
                 placeholder="请输入姓名"
                 @blur="$refs.form.validateField('name')"
                 clearable
-                :disabled="allDisabled"  
+                :disabled="allDisabled"
               ></el-input>
             </el-form-item>
 
@@ -49,7 +48,7 @@
                 style="width: 200px"
                 placeholder=""
                 clearable
-                :disabled="allDisabled"  
+                :disabled="allDisabled"
               ></el-input>
               <!-- <el-radio-group v-model="form.gender">
                 <el-radio value="男">男</el-radio>
@@ -64,7 +63,7 @@
                 style="width: 200px"
                 placeholder="根据身份证号生成"
                 clearable
-                :disabled="allDisabled"  
+                :disabled="allDisabled"
               ></el-input>
             </el-form-item>
 
@@ -75,7 +74,7 @@
                 style="width: 200px"
                 placeholder=""
                 clearable
-                :disabled="allDisabled"  
+                :disabled="allDisabled"
               ></el-input>
               <!-- <el-radio-group v-model="form.ethnicity">
                 <el-radio value="汉族">汉族</el-radio>
@@ -92,7 +91,7 @@
                 style="width: 200px"
                 placeholder=""
                 clearable
-                :disabled="allDisabled"  
+                :disabled="allDisabled"
               ></el-input>
               <!-- <el-radio-group v-model="form.department">
                 <el-radio value="安全部">安全部</el-radio>
@@ -107,7 +106,6 @@
                 <el-radio value="综合管理部">综合管理部</el-radio>
               </el-radio-group> -->
             </el-form-item>
-
           </div>
         </div>
         <div class="BaseInfo">
@@ -116,14 +114,14 @@
             <span class="title-text">提交日期（报告日期）</span>
           </div>
           <div class="BaseInfoDetail">
-              <el-form-item label="提交日期">
+            <el-form-item label="提交日期">
               <el-date-picker
                 v-model="form.checkDate"
                 type="date"
                 format="YYYY-MM-DD"
-                placeholder="请选择提交日期"  
-                style="width:200px"
-                :dieabled="disabledAfterDate"
+                placeholder="请选择提交日期"
+                style="width: 200px"
+                :disabled-date="disabledAfterDate"
               />
             </el-form-item>
           </div>
@@ -169,10 +167,9 @@
           </el-check-tag>
         </div>
 
-            <div class="LabTestReport">
-                <LabTestReport ref="LabTestReport" />
-            </div>
-
+        <div class="LabTestReport">
+          <LabTestReport ref="LabTestReport" />
+        </div>
       </el-form>
     </div>
   </el-drawer>
@@ -180,7 +177,7 @@
 
 <script>
 import { ElMessage } from "element-plus";
-import LabTestReport from './LabTestReport.vue';
+import LabTestReport from "./LabTestReport.vue";
 import { saveLabTestReport } from "@/api/check/check.js";
 export default {
   components: {
@@ -188,16 +185,17 @@ export default {
   },
   data() {
     return {
-    allDisabled:true, 
+      allDisabled: true,
       visible: false, // 控制弹窗显示
       form: {
         isVirusAntigenTestDone: false, // BOOLEAN, -- 是否已进行病毒抗原检测
         isVirusNucleicAcidTestDone: false, // BOOLEAN, -- 是否已进行病毒核酸检测
         isVirusCultureIsolationDone: false, // BOOLEAN, -- 是否已进行病毒培养分离
         isSerologicalTestDone: false, // BOOLEAN, -- 是否已进行血清学检测
+        checkDate:null,
       },
       rules: {},
-      userId:null,
+      userId: null,
     };
   },
 
@@ -208,67 +206,70 @@ export default {
     showDrawer(user) {
       this.form = { ...user };
       this.visible = true;
-      this.userId=user.userId;
+      this.userId = user.userId;
     },
     handleCancel() {
       this.visible = false;
       this.handleReset();
     },
+    disabledAfterDate(date) {
+      const today = new Date();
+      // 设置为今天的开始时间
+      today.setHours(0, 0, 0, 0);
+      // 返回日期是否在今天之后
+      return date.getTime() > today.getTime();
+    },
+    async handleSubmit() {
+      console.log("提交触发");
 
-async handleSubmit() {
-  console.log("提交触发");
+      try {
+        // 获取 userId 参数
+        const userId = this.userId;
 
-  try {
-    // 获取 userId 参数
-    const userId = this.userId;
-    
-    // 判断 pathogenicTestResults 值
-    const isAnyTestDone = this.form.isSerologicalTestDone ||
-                          this.form.isVirusAntigenTestDone ||
-                          this.form.isVirusCultureIsolationDone ||
-                          this.form.isVirusNucleicAcidTestDone;
-    const pathogenicTestResults = isAnyTestDone ? "阳性" : "阴性";
+        // 判断pathogenicTestResults值
+        const isAnyTestDone =
+          this.form.isSerologicalTestDone ||
+          this.form.isVirusAntigenTestDone ||
+          this.form.isVirusCultureIsolationDone ||
+          this.form.isVirusNucleicAcidTestDone;
+        const pathogenicTestResults = isAnyTestDone ? "阳性" : "阴性";
 
-    // 构建提交数据
-    const data = {
-      labTestFileIds: this.form.labTestFileIds || [],
-      pathogenicTestResults: pathogenicTestResults,
-      isSerologicalTestDone: this.form.isSerologicalTestDone,
-      isVirusAntigenTestDone: this.form.isVirusAntigenTestDone,
-      isVirusCultureIsolationDone: this.form.isVirusCultureIsolationDone,
-      isVirusNucleicAcidTestDone: this.form.isVirusNucleicAcidTestDone,
-    };
+        // 构建提交数据
+        const data = {
+          labTestFileIds: this.form.labTestFileIds || [],
+          pathogenicTestResults: pathogenicTestResults,
+          isSerologicalTestDone: this.form.isSerologicalTestDone,
+          isVirusAntigenTestDone: this.form.isVirusAntigenTestDone,
+          isVirusCultureIsolationDone: this.form.isVirusCultureIsolationDone,
+          isVirusNucleicAcidTestDone: this.form.isVirusNucleicAcidTestDone,
+        };
 
-    // 调用 saveLabTestReport API
-    const response = await saveLabTestReport(data, userId);
+        // 调接口
+        const response = await saveLabTestReport(data, userId);
 
-    // 检查响应的 code
-    if (response.data.code === 1) {
-      // 提交成功
-      this.visible = false;
-      ElMessage({
-        message: "提交成功",
-        type: "success",
-      });
-      this.$emit("updatecheck");
-      this.handleReset();
-    } else if (response.data.code === 0) {
-      // 提交失败，显示后端返回的 msg
-      ElMessage({
-        message: response.data.msg || "提交失败",
-        type: "error",
-      });
-    }
-
-  } catch (error) {
-    // 处理 API 调用错误
-    console.error("提交失败:", error.message);
-    ElMessage({
-      message: error.message,
-      type: "error",
-    });
-  }
-},
+        if (response.data.code === 1) {
+          this.visible = false;
+          ElMessage({
+            message: "提交成功",
+            type: "success",
+          });
+          this.$emit("updatecheck");
+          this.handleReset();
+        } else if (response.data.code === 0) {
+          // 提交失败，显示后端返回的 msg
+          ElMessage({
+            message: response.data.msg || "提交失败",
+            type: "error",
+          });
+        }
+      } catch (error) {
+        console.error("提交失败:", error.message);
+        ElMessage({
+          message: error.message,
+          type: "error",
+        });
+      }
+    },
 
     handleReset() {
       // this.form = this.getInitialForm();
@@ -281,6 +282,7 @@ async handleSubmit() {
         isVirusNucleicAcidTestDone: false, // BOOLEAN, -- 是否已进行病毒核酸检测
         isVirusCultureIsolationDone: false, // BOOLEAN, -- 是否已进行病毒培养分离
         isSerologicalTestDone: false, // BOOLEAN, -- 是否已进行血清学检测
+        checkDate:null,
       };
     },
   },
@@ -363,8 +365,8 @@ h3 {
   margin-top: 10px;
   margin-bottom: 20px;
 }
-.LabTestReport{
-    /* margin-left: -60px; */
-    margin-top: 20px;
+.LabTestReport {
+  /* margin-left: -60px; */
+  margin-top: 20px;
 }
 </style>

@@ -81,17 +81,18 @@
         <div class="BaseInfo">
           <div class="title-container">
             <div class="blue-box"></div>
-            <span class="title-text">提交日期（报告日期）</span>
+            <span class="title-text">报告日期</span>
           </div>
           <div class="BaseInfoDetail">
-              <el-form-item label="提交日期">
+              <el-form-item label="报告日期">
               <el-date-picker
                 v-model="form.checkDate"
                 type="date"
                 format="YYYY-MM-DD"
-                placeholder="请选择提交日期"  
+                placeholder="请选择报告日期"  
                 style="width:200px"
-                :dieabled="disabledAfterDate"
+                :disabled="allDisabled"
+                :disabled-date="disabledAfterDate"
               />
             </el-form-item>
           </div>
@@ -199,6 +200,7 @@ export default {
         isVirusNucleicAcidTestDone: false,
         isVirusCultureIsolationDone: false,
         isSerologicalTestDone: false,
+        checkDate:null,
       },
       reports: {
         hasStoolTest: [],
@@ -219,6 +221,13 @@ export default {
       this.visible = true;
       this.getLabTestFile(user.labTestReportId);
       this.selectLabTest(user.labTestReportId)
+    },
+    disabledAfterDate(date) {
+      const today = new Date();
+      // 设置为今天的开始时间
+      today.setHours(0, 0, 0, 0);
+      // 返回日期是否在今天之后
+      return date.getTime() > today.getTime();
     },
     handleCancel() {
       this.visible = false;
