@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="14" height="14" viewBox="0 0 14 14" fill="none">
+<path   fill="rgba(51, 51, 51, 1)"  d="M2.16675 1.195L11.8334 1.195C12.6922 1.195 13.3884 1.8912 13.3884 2.75L13.3884 9.5C13.3884 10.3588 12.6922 11.055 11.8334 11.055L2.16675 11.055C1.30795 11.055 0.611748 10.3588 0.611748 9.5L0.611748 2.75C0.611748 1.8912 1.30795 1.195 2.16675 1.195ZM2.16675 2.305C1.92098 2.305 1.72175 2.50423 1.72175 2.75L1.72175 9.5C1.72175 9.74577 1.92098 9.945 2.16675 9.945L11.8334 9.945C12.0792 9.945 12.2784 9.74577 12.2784 9.5L12.2784 2.75C12.2784 2.50423 12.0792 2.305 11.8334 2.305L2.16675 2.305Z">
+</path>
+<path    stroke="rgba(51, 51, 51, 1)" stroke-width="1.11" stroke-linejoin="round" stroke-linecap="round"  d="M7 10.5L7 12.5417">
+</path>
+<path    stroke="rgba(51, 51, 51, 1)" stroke-width="1.11" stroke-linejoin="round" stroke-linecap="round"  d="M9.33341 4.08337L4.66675 8.16671">
+</path>
+<path    stroke="rgba(51, 51, 51, 1)" stroke-width="1.11" stroke-linejoin="round" stroke-linecap="round"  d="M2.91675 12.5416L11.0834 12.5416">
+</path>
+<circle cx="4.375" cy="4.9583740234375" r="0.875" stroke="rgba(51, 51, 51, 1)" stroke-width="1.11" stroke-linejoin="round" stroke-linecap="round" >
+</circle>
+<ellipse cx="9.625" cy="7.291626214981079" rx="0.875" ry="0.8750002384185791" stroke="rgba(51, 51, 51, 1)" stroke-width="1.11" stroke-linejoin="round" stroke-linecap="round" >
+</ellipse>
+</svg>

@@ -1,0 +1,84 @@
+<!Doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <link rel="icon" type="image/png" href="/logo.svg" />
+    <title>川藏铁路突发传染病自主判别和现场调查管理系统</title>
+    
+    <style>
+      body {
+        background-color: #FAFAFA !important; 
+        overflow: hidden;
+        font-weight: normal;
+      }
+      .el-input__inner {
+        outline: none;
+        border: none;
+      }
+      .el-dropdown-link:focus {
+        outline: none;
+      }
+      
+      /* 加载动画样式 */
+      #loader-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgb(255, 255, 255);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column; /* 垂直排列内容 */
+      }
+
+      #loader {
+        width: 80px;
+        height: 80px;
+        border: 8px solid #fafafa;
+        border-top-color: #285ac8;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .loading-text {
+        margin-top: 15px; 
+        font-size: 14px;
+        color: #333; 
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    
+    <!-- 加载动画 -->
+    <div id="loader-wrapper">
+      <div id="loader"></div>
+      <div class="loading-text">加载中，请稍后......</div>
+    </div>
+  
+    <!-- Vue 应用的脚本 -->
+    <script type="module" src="/src/main.js"></script>
+    <!-- AMap API -->
+    <script src="https://webapi.amap.com/maps?v=2.0&key=55f746c1718bbd2930ba179a96bdd895&plugin=AMap.Geocoder"></script>
+    <!-- 热力图数据 -->
+    <script src="https://a.amap.com/jsapi_demos/static/resource/heatmapData.js"></script>
+
+    <script>
+      // 在页面加载完成后隐藏加载动画
+      window.addEventListener('load', function() {
+        document.getElementById('loader-wrapper').style.display = 'none';
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+
+// $--color-primary: #285AC8 !important;
+@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+  $colors: (
+    'primary': (
+      'base': #285AC8,
+    ),
+  ),
+);
+
+@use "element-plus/theme-chalk/src/index.scss" as *;
+
+.el-input{
+  --el-input-focus-border-color:#715CFE
+}

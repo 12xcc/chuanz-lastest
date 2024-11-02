@@ -1,0 +1,45 @@
+  /* ***********************************NextContainer样式************************************ */
+ .NextContainer {
+    width: 580px;
+    height: auto;
+    background-color: #fafafa;
+    margin-left: 20px;
+    border-radius: 10px;
+  }
+  
+  /* :deep()深度样式覆盖 */
+  .NextContainer .el-checkbox__inner,
+  .NextContainer .el-radio__inner,
+  .NextContainer .el-input__wrapper {
+    background-color: #fafafa !important; /* 仅未选中状态 */
+  }
+  
+  
+  /* 复选框选中状态 */
+  .NextContainer :deep(.el-checkbox.is-checked .el-checkbox__inner) {
+    background-color: #285AC8 !important; /* 保持选中状态的背景色 */
+    border-color: #285AC8 !important; /* 保持选中状态的边框色 */
+  }
+  
+  /* 单选框未选中状态 */
+  .NextContainer :deep(.el-radio__inner) {
+    background-color: #fafafa !important; /* 未选中状态 */
+  }
+  
+  /* 单选框选中状态 */
+  .NextContainer :deep(.el-radio.is-checked .el-radio__inner) {
+    background-color: #285AC8 !important; /* 选中背景色，默认蓝色 */
+    border-color: #285AC8 !important; /* 选中边框色 */
+  }
+  
+  /* 确保选中状态的圆点颜色 */
+  .NextContainer :deep(.el-radio.is-checked .el-radio__inner::before) {
+    background-color: #fff !important; /* 选中状态的圆点颜色 */
+  }
+  
+  /* 请输入框背景色 */
+  .NextContainer :deep(.el-input__inner) {
+    background-color: #fafafa !important;
+  }
+  
+  /* ************************************************************************************** */

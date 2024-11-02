@@ -1,0 +1,21 @@
+/* src/assets/styles/global.scss */
+
+.el-input {
+    /* 修改 el-input 的样式 */
+    font-size: 14px;
+    border-radius: 8px;
+    border: none !important;
+  
+    .el-input__inner {
+      /* 修改 el-input__inner 的样式 */
+      padding-left: 5px;
+      border: none !important;
+      background-color: transparent !important;
+    }
+    .el-input__inner:focus{
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+  }
+  
