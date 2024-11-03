@@ -2,12 +2,13 @@ import axiosInstance from "@/utils/axiosInstance.js";
 
 // 获取用户列表
 export const pageSelectDiseaseLearningMaterials = async (params) => {
-  const response = await axiosInstance.post("/cdcStaff/promotionalMaterialsManager/pageSelectDiseaseLearningMaterials", 
+  const response = await axiosInstance.post(
+    "/cdcStaff/promotionalMaterialsManager/pageSelectDiseaseLearningMaterials",
     params,
     {
-        headers: {
-          'Content-Type': 'application/json', 
-        },
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
   );
   return response;
@@ -15,12 +16,13 @@ export const pageSelectDiseaseLearningMaterials = async (params) => {
 
 // 切换材料状态
 export const startOrStopMaterial = async (materialId, isDelete) => {
-  const response = await axiosInstance.put("/cdcStaff/promotionalMaterialsManager/startOrStopMaterial", 
+  const response = await axiosInstance.put(
+    "/cdcStaff/promotionalMaterialsManager/startOrStopMaterial",
     null,
     {
       params: { materialId, isDelete }, // 传递参数
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     }
   );
@@ -48,7 +50,7 @@ export const getLearningMaterialFile = async (filename) => {
     {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-      }
+      },
     }
   );
   return response;
@@ -58,6 +60,20 @@ export const getLearningMaterialFile = async (filename) => {
 export const saveMaterial = async (data) => {
   const response = await axiosInstance.post(
     "/cdcStaff/promotionalMaterialsManager/saveMaterial",
+    data,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  return response;
+};
+
+// 根据id修改宣传材料
+export const updateMaterialById = async (data) => {
+  const response = await axiosInstance.post(
+    "/cdcStaff/promotionalMaterialsManager/updateMaterialById",
     data,
     {
       headers: {

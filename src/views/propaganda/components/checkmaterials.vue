@@ -55,7 +55,11 @@
               </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="材料所属疾病类型" prop="diseaseTypeName" size="default">
+            <el-form-item
+              label="材料所属疾病类型"
+              prop="diseaseTypeName"
+              size="default"
+            >
               <el-select
                 v-model="form.diseaseTypeName"
                 placeholder=""
@@ -149,7 +153,10 @@ import { ElMessage } from "element-plus";
 import PdfUpload from "./pdfUpload.vue";
 import ImageUpload from "./imageUpload.vue";
 import VedioUpload from "./VideoUpload.vue";
-import { getMaterialById } from "@/api/propaganda/propaganda.js";
+import {
+  getMaterialById,
+  updateMaterialById,
+} from "@/api/propaganda/propaganda.js";
 
 export default {
   components: {
@@ -165,6 +172,21 @@ export default {
       form: {}, // 表单数据
       rules: {}, // 表单验证规则
       diseaseTypeName: null, // 疾病类型名称
+      materialId: null,
+
+      rules: {
+        Title: [{ required: true, message: "请填写标题", trigger: "blur" }],
+        MaterialType: [
+          { required: true, message: "请选择材料类型", trigger: "change" },
+        ],
+        diseaseTypeName: [
+          {
+            required: true,
+            message: "请选择材料所属疾病类型",
+            trigger: "change",
+          },
+        ],
+      },
     };
   },
   watch: {
@@ -192,8 +214,8 @@ export default {
     },
   },
   methods: {
-    // 展示抽屉，并加载资料信息
     showDrawer(materialId) {
+      this.materialId = materialId;
       this.fetchMaterialById(materialId);
       this.visible = true;
     },
@@ -266,17 +288,41 @@ export default {
       this.isEditing = true;
     },
 
-    // 提交编辑后的资料
     async handleSubmit() {
+      console.log("Submitting..."); // 调试信息
+
+      // 从 filePath 中去掉前缀
+      const filePath = this.form.filePath.replace(
+        "https://ds.sccdc.cn/common/file/getLearningMaterialFile/",
+        ""
+      );
+
       try {
-        this.visible = false;
-        ElMessage({
-          message: "提交成功",
-          type: "success",
-        });
+        const params = {
+          materialId: this.materialId,
+          title: this.form.Title,
+          materialType: this.form.MaterialType,
+          diseaseTypeName: this.form.diseaseTypeName,
+          file: null, // 暂时设置为null
+          link: this.form.Link,
+        };
+        const response = await updateMaterialById(params);
+        console.log("Response:", response); 
+        if (response.data.code === 1) {
+          ElMessage({
+            message: "提交成功",
+            type: "success",
+          });
+          this.handleCancel();
+        } else {
+          ElMessage({
+            message: response.data.msg || "提交失败",
+            type: "error",
+          });
+        }
       } catch (error) {
         ElMessage({
-          message: error.message,
+          message: error.message || "提交出错",
           type: "error",
         });
       }
