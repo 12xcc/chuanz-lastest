@@ -3,7 +3,6 @@
     :model-value="visible"
     direction="rtl"
     size="800px"
-    
     :with-header="false"
     custom-class="custom-drawer"
     @close="handleCancel"
@@ -13,7 +12,9 @@
         <h3>查看/编辑检测信息</h3>
         <div class="footer">
           <el-button v-if="!isEditing" @click="handleEdit">编辑</el-button>
-          <el-button v-if="isEditing" type="primary" @click="handleSubmit">提交</el-button>
+          <el-button v-if="isEditing" type="primary" @click="handleSubmit"
+            >提交</el-button
+          >
         </div>
       </div>
       <el-form
@@ -84,13 +85,13 @@
             <span class="title-text">报告日期</span>
           </div>
           <div class="BaseInfoDetail">
-              <el-form-item label="报告日期">
+            <el-form-item label="报告日期">
               <el-date-picker
                 v-model="form.uploadDate"
                 type="date"
                 format="YYYY-MM-DD"
-                placeholder="请选择报告日期"  
-                style="width:200px"
+                placeholder="请选择报告日期"
+                style="width: 200px"
                 :disabled="allDisabled"
                 :disabled-date="disabledAfterDate"
               />
@@ -148,18 +149,20 @@
               v-model="reports.hasStoolTest"
               :specimen-type="'粪便'"
               report-type="hasStoolTest"
-              :initial-file="reports.hasStoolTest" 
+              :initial-file="reports.hasStoolTest"
               :fetch-file="getLabTestFile"
             />
             <div class="title-container">
               <div class="blue-box"></div>
-              <span class="title-text">呕吐物检查报告（请上传jpg或pdf格式）</span>
+              <span class="title-text"
+                >呕吐物检查报告（请上传jpg或pdf格式）</span
+              >
             </div>
             <UploadSection
               v-model="reports.vomit"
               :specimen-type="'呕吐物'"
               report-type="vomit"
-              :initial-file="reports.vomit" 
+              :initial-file="reports.vomit"
               :fetch-file="getLabTestFile"
             />
             <div class="title-container">
@@ -170,9 +173,18 @@
               v-model="reports.blood"
               :specimen-type="'血'"
               report-type="blood"
-              :initial-file="reports.blood" 
+              :initial-file="reports.blood"
               :fetch-file="getLabTestFile"
             />
+
+            <div>
+              <UploadSection
+                v-if="files.length"
+                :initial-file="files"
+                :fetch-file="getLabTestFile"
+              />
+              <!-- <el-button @click="showDrawer(user)">查看报告</el-button> -->
+            </div>
           </el-form>
         </div>
       </el-form>
@@ -182,8 +194,12 @@
 
 <script>
 import { ElMessage } from "element-plus";
-import UploadSection from '@/components/UploadSection.vue';
-import { getLabTestFile,updateLabTest,selectLabTest  } from "@/api/check/check.js"; 
+import UploadSection from "@/components/UploadSection.vue";
+import {
+  getLabTestFile,
+  updateLabTest,
+  selectLabTest,
+} from "@/api/check/check.js";
 
 export default {
   components: {
@@ -200,13 +216,14 @@ export default {
         isVirusNucleicAcidTestDone: false,
         isVirusCultureIsolationDone: false,
         isSerologicalTestDone: false,
-        uploadDate:null,
+        uploadDate: null,
       },
       reports: {
         hasStoolTest: [],
         vomit: [],
         blood: [],
       },
+      files: [], 
       rules: {
         diagnosisDate: [{ required: true, message: "请选择该诊断的诊断日期" }],
       },
@@ -220,13 +237,11 @@ export default {
       this.form = { ...user };
       this.visible = true;
       this.getLabTestFile(user.labTestReportId);
-      this.selectLabTest(user.labTestReportId)
+      this.selectLabTest(user.labTestReportId);
     },
     disabledAfterDate(date) {
       const today = new Date();
-      // 设置为今天的开始时间
       today.setHours(0, 0, 0, 0);
-      // 返回日期是否在今天之后
       return date.getTime() > today.getTime();
     },
     handleCancel() {
@@ -238,9 +253,6 @@ export default {
     handleEdit() {
       this.allDisabled = false;
       this.isEditing = true;
-    },
-    vaildate(){
-      
     },
     async handleSubmit() {
       try {
@@ -259,7 +271,6 @@ export default {
         const response = await updateLabTest(data);
 
         if (response.data.code === 1) {
-          // 提交成功处理
           this.visible = false;
           ElMessage({
             message: "提交成功",
@@ -283,38 +294,92 @@ export default {
     },
     handleReset() {
       this.message = "";
+      this.files = [];
     },
+    //  async getLabTestFile(labTestId) {
+    //   try {
+    //     const response = await getLabTestFile(labTestId);
+    //     if (response.status === 200) {
+    //       const blob = response.data;
+    //       const file = new File(
+    //         [blob],
+    //         response.headers["content-disposition"].split("filename=")[1],
+    //         {
+    //           type: response.headers["content-type"],
+    //         }
+    //       );
 
-    async selectLabTest(labTestReportId){
-        try{
-          const response = await selectLabTest(labTestReportId);
+    //       this.files.push({
+    //         name: file.name,
+    //         url: URL.createObjectURL(file), // URL for preview
+    //         raw: file,
+    //       });
+    //     } else {
+    //       ElMessage({ message: "获取文件失败", type: "error" });
+    //     }
+    //   } catch (error) {
+    //     console.error("获取文件失败:", error.message);
+    //     ElMessage({ message: error.message, type: "error" });
+    //   }
+    // },
 
-          if (response.data.code === 1) {
+    async getLabTestFile(labTestId) {
+    try {
+      const response = await getLabTestFile(labTestId);
+      if (response.status === 200) {
+        const blob = response.data;
+        const contentDisposition = response.headers["content-disposition"];
+        const filename = contentDisposition ? contentDisposition.split("filename=")[1].replace(/"/g, '') : 'downloaded_file';
+        
+        // 下载文件
+        // this.downloadFile(blob, filename);
+
+        // 处理文件预览
+        const file = new File([blob], filename, { type: response.headers["content-type"] });
+        this.files.push({
+          name: file.name,
+          url: URL.createObjectURL(file), // URL for preview
+          raw: file,
+        });
+      } else {
+        ElMessage({ message: "获取文件失败", type: "error" });
+      }
+    } catch (error) {
+      console.error("获取文件失败:", error.message);
+      ElMessage({ message: error.message, type: "error" });
+    }
+  },
+
+  // downloadFile(blob, filename) {
+  //   const url = URL.createObjectURL(blob);
+  //   const a = document.createElement('a');
+  //   a.href = url;
+  //   a.download = filename; // 设置下载文件名
+  //   document.body.appendChild(a);
+  //   a.click();
+  //   document.body.removeChild(a);
+  //   URL.revokeObjectURL(url); // 释放内存
+  // },
+    async selectLabTest(labTestReportId) {
+      try {
+        const response = await selectLabTest(labTestReportId);
+        if (response.data.code === 1) {
           this.form.isVirusAntigenTestDone = response.data.data.isVirusAntigenTestDone;
-          this.form.isVirusNucleicAcidTestDone=response.data.data.isVirusNucleicAcidTestDone;          
+          this.form.isVirusNucleicAcidTestDone = response.data.data.isVirusNucleicAcidTestDone;
           this.form.isSerologicalTestDone = response.data.data.isSerologicalTestDone;
           this.form.isVirusCultureIsolationDone = response.data.data.isVirusCultureIsolationDone;
-          const uploadDateArray = response.data.data.uploadDate;
+            const uploadDateArray = response.data.data.uploadDate;
             this.form.uploadDate = uploadDateArray.map(num => String(num).padStart(2, '0')).join('-');
-        }
-        console.log(this.form);
-        }catch(error){
-          ElMessage.error(error);
-        }
-    },
 
-    async getLabTestFile(labTestReportId) {
-      try {
-        const response = await getLabTestFile(labTestReportId);
-
-        if (response && response.data) {
-          this.reports.hasStoolTest = response.data.hasStoolTest || [];
-          this.reports.vomit = response.data.vomit || [];
-          this.reports.blood = response.data.blood || [];
+          this.reports.hasStoolTest = response.data.data.hasStoolTest || [];
+          this.reports.vomit = response.data.data.vomit || [];
+          this.reports.blood = response.data.data.blood || [];
+        } else {
+          ElMessage({ message: response.data.msg || "查询失败", type: "error" });
         }
       } catch (error) {
-        console.error(error);
-        return null;
+        console.error("查询失败:", error.message);
+        ElMessage({ message: error.message, type: "error" });
       }
     },
   },

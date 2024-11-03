@@ -71,10 +71,22 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { Delete, Plus, ZoomIn } from '@element-plus/icons-vue'
-import type { UploadFile, UploadProps } from 'element-plus'
+import { ref, onMounted } from 'vue';
+import { Delete, Plus, ZoomIn } from '@element-plus/icons-vue';
+import type { UploadFile } from 'element-plus';
 
+// 定义文件接口
+interface InitialFile {
+  name: string;
+  url: string;
+  raw?: File;
+}
+
+interface CustomFile extends UploadFile {
+  uid: number; // 添加 uid 属性
+}
+
+// 从 props 中获取数据
 const props = defineProps({
   'report-type': {
     type: String,
@@ -84,28 +96,56 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  initialFile: {
+    type: Array as () => InitialFile[],
+    default: () => [],
+  },
+  fetchFile: {
+    type: Function,
+    required: true,
+  }
 });
 
 const dialogImageUrl = ref('');
 const dialogVisible = ref(false);
 const disabled = ref(false);
-const files = ref<UploadFile[]>([]);
-const isPdf = ref(false); // 新增变量判断是否为PDF
-const currentFilename = ref(''); // 新增变量存储当前文件名
+const files = ref<CustomFile[]>([]); 
+const isPdf = ref(false);
+const currentFilename = ref('');
 
-const handleRemove: UploadProps['onRemove'] = (file, fileList) => {
+// 处理文件移除
+const handleRemove = (file: CustomFile, fileList: CustomFile[]) => {
   const index = fileList.indexOf(file);
   if (index !== -1) {
     fileList.splice(index, 1);
   }
 }
 
-const handlePictureCardPreview = (file: UploadFile) => {
+// 处理图片预览
+const handlePictureCardPreview = (file: CustomFile) => {
   dialogImageUrl.value = file.url || URL.createObjectURL(file.raw);
-  isPdf.value = file.raw && file.raw.type === 'application/pdf'; // 判断是否为PDF
-  currentFilename.value = file.name; // 获取当前文件名
+  isPdf.value = file.raw && file.raw.type === 'application/pdf';
+  currentFilename.value = file.name;
   dialogVisible.value = true;
 }
+
+// 从后端获取文件数据并设置到文件列表
+const setInitialFiles = () => {
+  props.initialFile.forEach((file: InitialFile) => {
+    files.value.push({
+      name: file.name,
+      url: file.url,
+      raw: file.raw,
+      uid: Date.now() + Math.random(), // 确保 uid 唯一
+      status: 'success',
+    } as CustomFile); // 类型断言
+  });
+}
+
+// 组件挂载时设置初始文件
+onMounted(() => {
+  setInitialFiles();
+});
 </script>
 
 <style scoped>
@@ -156,6 +196,6 @@ const handlePictureCardPreview = (file: UploadFile) => {
 
 .pdf-preview {
     width: 100%; 
-    height: 500px; /* 你可以根据需要调整高度 */
+    height: 500px; 
 }
 </style>

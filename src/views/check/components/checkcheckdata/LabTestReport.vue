@@ -1,5 +1,4 @@
 <template>
-<!-- 暂时弃用，已合并到checkcheckdata.vue中 -->
   <div>
     <el-form :disabled="allDisabled">
       <div class="title-container">
@@ -10,7 +9,7 @@
         v-model="reports.hasStoolTest"
         :specimen-type="'粪便'"
         report-type="hasStoolTest"
-        :fetch-file="getLabTestFile"
+        :fetch-file="fetchStoolTestFile"
       />
 
       <div class="title-container">
@@ -21,7 +20,7 @@
         v-model="reports.vomit"
         :specimen-type="'呕吐物'"
         report-type="vomit"
-        :fetch-file="getLabTestFile"
+        :fetch-file="fetchVomitFile"
       />
 
       <div class="title-container">
@@ -32,7 +31,7 @@
         v-model="reports.blood"
         :specimen-type="'血'"
         report-type="blood"
-        :fetch-file="getLabTestFile"
+        :fetch-file="fetchBloodFile"
       />
     </el-form>
   </div>
@@ -40,7 +39,7 @@
 
 <script>
 import UploadSection from '@/components/UploadSection.vue';
-import { getLabTestFile } from "@/api/check/check.js"; // 修改为接口所在的文件路径
+import { getLabTestFile } from "@/api/check/check.js";
 
 export default {
   components: {
@@ -54,7 +53,7 @@ export default {
         vomit: [],
         blood: [],
       },
-      labTestId:null, // 固定的labTestId
+      labTestId: null, // 固定的labTestId
     };
   },
   methods: {
@@ -64,13 +63,26 @@ export default {
     handleCancel() {
       this.allDisabled = true;
     },
-    async getLabTestFile() {
+    async fetchStoolTestFile() {
+      await this.fetchFile('hasStoolTest');
+    },
+    async fetchVomitFile() {
+      await this.fetchFile('vomit');
+    },
+    async fetchBloodFile() {
+      await this.fetchFile('blood');
+    },
+    async fetchFile(reportType) {
       try {
         const response = await getLabTestFile(this.labTestId);
-        return response.data;
+        const fileData = response.data; // 获取文件数据
+
+        // 假设 fileData 是一个文件对象
+        if (fileData) {
+          this.reports[reportType].push(fileData); // 将文件添加到对应的报告中
+        }
       } catch (error) {
         console.error("Error fetching lab test file:", error);
-        return null;
       }
     },
   },
