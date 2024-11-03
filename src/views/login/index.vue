@@ -94,7 +94,7 @@ export default {
         const response = await loginUser(loginData);
         const { code, data, msg } = response.data;  // 从响应中解构获取 code, data 和 msg
         if (code === 1) {
-          const userRole = data.user.userType; // 获取用户角色
+          const userRole = data.userType; // 获取用户角色
           
           // 检查用户角色是否为允许的角色
           if (
@@ -105,7 +105,7 @@ export default {
             const userData = {
               phoneNumber: phoneNumber.value,
               token: data.token,
-              name: data.user.name,
+              name: data.userName,
               role: userRole,  // 使用后端返回的 userType
             };
             userStore.login(userData);
