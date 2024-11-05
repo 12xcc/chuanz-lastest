@@ -306,7 +306,7 @@ export default {
       this.$refs.batchImportDialog.showDialog();
     },
 
-    // 下载导入模板
+    // 下载导入模板 用前端本地文件下载 暂时弃用
     // handleDownload() {
     //   const link = document.createElement("a");
     //   link.href = "/template.xlsx"; // 指向 public 目录下的文件
@@ -319,6 +319,8 @@ export default {
     //     type: "success",
     //   });
     // },
+    
+    // 下载导入模板 调后端接口下载
     async handleDownload() {
       try {
         const response = await queryAllUserToExcel();

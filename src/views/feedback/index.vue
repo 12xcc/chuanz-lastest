@@ -49,13 +49,15 @@
           plain
           size="default"
           style="margin-left: 5px"
-        >搜索</el-button>
+          >搜索</el-button
+        >
         <el-button
           type="primary"
           class="custom-button"
           @click="handleExport"
           size="default"
-        >导出</el-button>
+          >导出</el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -72,7 +74,7 @@
         style="width: 100%"
         :height="tableHeight"
         :show-overflow-tooltip="true"
-        :default-sort="{ prop: 'feedbackId', order: '' }" 
+        :default-sort="{ prop: 'feedbackId', order: '' }"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="serialNumber" label="序号" width="80" sortable />
@@ -110,7 +112,10 @@
 <script>
 import Pagination from "@/components/pagination.vue";
 import Feedbackdata from "./components/feedbackdata.vue";
-import { fetchFeedbackData , exportFeedbackData  } from "@/api/feedback/feedback.js";
+import {
+  fetchFeedbackData,
+  exportFeedbackData,
+} from "@/api/feedback/feedback.js";
 
 export default {
   components: {
@@ -141,31 +146,37 @@ export default {
   },
 
   methods: {
-
-     // 格式化反馈日期
+    // 格式化反馈日期
     formatDate(feedbackDate) {
-      const [year, month, day, hour, minute, second] = feedbackDate;
-      return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
+      // if (!feedbackDate || feedbackDate.length < 5) return "";
+      const [year, month, day, hour, minute, second = 0] = feedbackDate;
+      return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(
+        2,
+        "0"
+      )} ${String(hour).padStart(2, "0")}:${String(minute).padStart(
+        2,
+        "0"
+      )}:${String(second).padStart(2, "0")}`;
     },
 
     // 获取反馈信息列表api
     async handleQuery() {
-      this.loading = true; 
+      this.loading = true;
       try {
         const params = {
-          feedbackTitle: this.queryParams.titlecheck || "", 
+          feedbackTitle: this.queryParams.titlecheck || "",
           name: this.queryParams.namecheck || "",
           phoneNumber: this.queryParams.phoneNumbercheck || "",
           pageNo: this.queryParams.pageNum,
           pageSize: this.queryParams.pageSize,
         };
-        const response = await fetchFeedbackData(params); 
+        const response = await fetchFeedbackData(params);
 
         if (response.data.code === 1) {
           // 格式化反馈日期
-          this.allData = response.data.data.records.map((item,index) => ({
+          this.allData = response.data.data.records.map((item, index) => ({
             ...item,
-             serialNumber:
+            serialNumber:
               (this.queryParams.pageNum - 1) * this.queryParams.pageSize +
               index +
               1,
@@ -191,12 +202,11 @@ export default {
       }
     },
 
-
     // 导出表格信息
     async handleExport() {
-      try{
+      try {
         const response = await exportFeedbackData();
-        if(response.status === 200 ){
+        if (response.status === 200) {
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
           link.href = url;
@@ -214,7 +224,7 @@ export default {
             type: "error",
           });
         }
-      }catch(error){
+      } catch (error) {
         console.error("导出出错:", error);
         this.$message({
           message: "导出出错，请重试",

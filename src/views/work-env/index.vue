@@ -178,7 +178,8 @@ export default {
   methods: {
     // 格式化提交时间
     formatDate(submissionTime) {
-      const [year, month, day, hour, minute, second] = submissionTime;
+      // 暂时不加时间数组长度判断
+      const [year, month, day, hour, minute, second = 0] = submissionTime;
       return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(
         2,
         "0"
