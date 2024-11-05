@@ -129,7 +129,7 @@ export default {
               ? dataLow[params[1].dataIndex] || 0
               : 0;
 
-            const accuracy =
+            const chartAccuracy =
               diagnosisCount > 0
                 ? ((confirmedCount / diagnosisCount) * 100).toFixed(2)
                 : "0.00";
@@ -138,7 +138,7 @@ export default {
               2
             )} 人<br/>确诊数 ${confirmedCount.toFixed(
               2
-            )} 人<br/>准确率 ${accuracy}%`;
+            )} 人<br/>准确率 ${chartAccuracy}%`;
           },
           backgroundColor: "#FFFFFF",
           borderColor: "#FFFFFF",
@@ -201,18 +201,30 @@ export default {
           console.log(" cardData.value[0].data:", cardData.value[0].data);
           console.log(" cardData.value[1].data:", cardData.value[1].data);
 
-          cardData.value[2].data =
-            (
-              (response.data.data.confirmedNumber /
-                response.data.data.diagnosedNumber) *
-              100
-            ).toFixed(2) + "%" || 0.00 + "%";
-          if (parseFloat(cardData.value[2].data) > 100) {
-            cardData.value[2].data = "-%";
-          }
-          if (parseFloat(cardData.value[2].data) < 100) {
-            cardData.value[2].data = "-%";
-          }
+          // 总的准确率计算
+          let totalPredictDiagnoseNumber = 0;
+          let totalActuallyDiagnoseNumber = 0;
+
+          response.data.data.list.forEach((item) => {
+            totalPredictDiagnoseNumber += item.predictDiagnoseNumber || 0;
+            totalActuallyDiagnoseNumber += item.actuallyDiagnoseNumber || 0;
+          });
+
+          const accuracy =
+            totalPredictDiagnoseNumber > 0
+              ? (
+                  (totalActuallyDiagnoseNumber / totalPredictDiagnoseNumber) *
+                  100
+                ).toFixed(2)
+              : "0.00";
+
+          cardData.value[2].data = accuracy + "%";
+          // if (parseFloat(cardData.value[2].data) > 100) {
+          //   cardData.value[2].data = "-%";
+          // }
+          // if (parseFloat(cardData.value[2].data) < 100) {
+          //   cardData.value[2].data = "-%";
+          // }
           updateChart(response.data.data);
         } else {
           console.error("Failed to fetch data:", response);
@@ -226,6 +238,7 @@ export default {
   },
 };
 </script>
+
 
 
 
