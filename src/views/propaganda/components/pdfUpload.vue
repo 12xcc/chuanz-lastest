@@ -62,7 +62,7 @@
 </template>
 
 <script lang="js" setup>
-import { ref, defineProps, defineEmits, onMounted } from 'vue';
+import { ref, defineEmits, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { Plus, Delete, ZoomIn } from '@element-plus/icons-vue';
 import pdfIcon from "@/assets/filesiconPDF.svg"

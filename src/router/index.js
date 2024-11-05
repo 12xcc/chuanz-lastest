@@ -39,7 +39,6 @@ const routes=[
     {
         path: '/',
         redirect: '/login',
-        // 对应一个vue组件/页面
         component: layout,
         name: 'main',
         children: [

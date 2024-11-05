@@ -129,7 +129,6 @@ export default {
               ? dataLow[params[1].dataIndex] || 0
               : 0;
 
-
             const accuracy =
               diagnosisCount > 0
                 ? ((confirmedCount / diagnosisCount) * 100).toFixed(2)
@@ -207,8 +206,10 @@ export default {
               (response.data.data.confirmedNumber /
                 response.data.data.diagnosedNumber) *
               100
-            ).toFixed(2) + "%" || 0.00 ;
-
+            ).toFixed(2) + "%" || 0.00 + "%";
+          if (parseFloat(cardData.value[2].data) > 100) {
+            cardData.value[2].data = "暂无%";
+          }
           updateChart(response.data.data);
         } else {
           console.error("Failed to fetch data:", response);

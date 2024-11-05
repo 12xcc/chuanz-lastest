@@ -1,4 +1,5 @@
 <template>
+<!-- 暂时弃用，已合并到父组件 -->
   <div class="chart-container">
     <div ref="chart" class="chart"></div>
   </div>
@@ -26,7 +27,7 @@ const props = defineProps({
 
 const chart = ref(null);
 
-// 示例数据：这里可以替换为真实数据
+
 const allData = {
   新型冠状病毒感染: [120, 245, 300, 150, 180, 220, 330, 280, 200, 250, 190, 230],
   流感: [50, 75, 90, 65, 80, 110, 150, 130, 140, 120, 100, 110],
