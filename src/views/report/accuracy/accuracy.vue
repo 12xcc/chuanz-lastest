@@ -208,7 +208,10 @@ export default {
               100
             ).toFixed(2) + "%" || 0.00 + "%";
           if (parseFloat(cardData.value[2].data) > 100) {
-            cardData.value[2].data = "暂无%";
+            cardData.value[2].data = "-%";
+          }
+          if (parseFloat(cardData.value[2].data) < 100) {
+            cardData.value[2].data = "-%";
           }
           updateChart(response.data.data);
         } else {
