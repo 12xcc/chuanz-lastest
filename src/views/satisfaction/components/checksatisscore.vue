@@ -205,8 +205,8 @@ export default {
       }
     },
     formatRatingTime(ratingTimeArray) {
-      if (!ratingTimeArray || ratingTimeArray.length < 6) return "";
-      const [year, month, day, hour, minute, second] = ratingTimeArray;
+      if (!ratingTimeArray || ratingTimeArray.length < 5) return "";
+      const [year, month, day, hour, minute, second = 0] = ratingTimeArray;
       return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(
         2,
         "0"
