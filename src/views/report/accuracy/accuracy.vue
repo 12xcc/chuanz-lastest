@@ -213,7 +213,7 @@ export default {
           const accuracy =
             totalPredictDiagnoseNumber > 0
               ? (
-                  (totalActuallyDiagnoseNumber / totalPredictDiagnoseNumber) *
+                  (totalPredictDiagnoseNumber/  totalActuallyDiagnoseNumber ) *
                   100
                 ).toFixed(2)
               : "0.00";
