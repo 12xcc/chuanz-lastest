@@ -76,3 +76,11 @@ export const getstrike = async () => {
   );
   return response;
 };
+
+// 更改准确率参数
+export const JudgmentsPredictorNumber = async (range) => {
+  const response = await axiosInstance.put(
+    `/cdcStaff/statisticsDiagnosticAccuracy/JudgmentsPredictorNumber/${range}`
+  );
+  return response;
+};

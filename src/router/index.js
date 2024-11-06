@@ -34,6 +34,8 @@ const feedback = () =>import('@/views/feedback/index.vue')
 const propaganda = () => import('@/views/propaganda/index.vue')
 const satisfaction = () => import('@/views/satisfaction/index.vue')
 const accuracy = () => import('@/views/report/accuracy/accuracy.vue')
+
+const accuracymanage = () => import('@/views/system/accuracymanage/accuracymanage.vue')
 // 1.定义路由数据
 const routes=[
     {
@@ -147,6 +149,11 @@ const routes=[
                         path: 'hospital',
                         component: hospital,
                         name: 'hospital'
+                    },
+                    {
+                        path: 'accuracy-manage',
+                        component: accuracymanage,
+                        name: 'accuracymanage'
                     }
                 ]
             },

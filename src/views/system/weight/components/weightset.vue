@@ -11,7 +11,10 @@
       <div class="title">
         <h3>设置疾病权重</h3>
         <div class="footer">
-          <el-button type="primary" @click="handleSubmit">提交</el-button>
+          <el-button type="primary" @click="handleSubmit">保存</el-button>
+          <el-button type="warning" @click="handleUpdateHis"
+            >保存并更新历史打卡的预测信息</el-button
+          >
         </div>
       </div>
       <el-form
@@ -143,7 +146,11 @@
 </template>
 
 <script>
-import { getAllWeightScoringInfo,updateBatchWeightScoring } from "@/api/system/weight.js";
+import {
+  getAllWeightScoringInfo,
+  updateBatchWeightScoring,
+  updateBatchWeightScoringAndDiagnosisSoring,
+} from "@/api/system/weight.js";
 import GeneralSymptomsScore from "./GeneralSymptomsScore.vue";
 import RespiratorySymptomsScore from "./RespiratorySymptomsScore.vue";
 import DigestiveSymptomsScore from "./DigestiveSymptomsScore.vue";
@@ -152,7 +159,7 @@ import NeurologicalSymptomsScore from "./NeurologicalSymptomsScore.vue";
 import LocalSymptomsScore from "./LocalSymptomsScore.vue";
 import OtherSymptomsScore from "./OtherSymptomsScore.vue";
 import RiskFactorsAndExposureScore from "./RiskFactorsAndExposureScore.vue";
-
+import {ElMessage, ElMessageBox } from "element-plus";
 export default {
   components: {
     GeneralSymptomsScore,
@@ -279,10 +286,9 @@ export default {
       console.log("Updated WeightScore:", this.form.WeightScore);
     },
 
-
-  handleSubmit() {
-    // 总分不是100不让交
-     if (this.form.WeightScore !== 100) {
+    handleSubmit() {
+      // 总分不是100不让交
+      if (this.form.WeightScore !== 100) {
         this.$message.error("所有分数总和必须为100，无法提交！");
         return;
       }
@@ -318,7 +324,6 @@ export default {
       // 调用接口
       updateBatchWeightScoring(requestData)
         .then((response) => {
-          
           if (response.data.code === 1) {
             this.$message.success("提交成功");
             this.visible = false;
@@ -331,13 +336,87 @@ export default {
           this.$message.error("提交失败");
         });
     },
+
+    handleUpdateHis() {
+      // 确保分数总和为 100
+      if (this.form.WeightScore !== 100) {
+        ElMessage.error("所有分数总和必须为100，无法提交！");
+        return;
+      }
+
+      // 第一次确认
+      ElMessageBox.confirm(
+        "点击此按钮将会修改诊断权重表，并更新历史预测的结果。请不要轻易尝试！",
+        "确认操作",
+        {
+          confirmButtonText: "我已知晓",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(() => {
+          // 第二次确认
+          return ElMessageBox.confirm(
+            "您确定要继续吗？此操作不可逆！",
+            "再次确认",
+            {
+              confirmButtonText: "确认修改",
+              cancelButtonText: "取消",
+              type: "warning",
+            }
+          );
+        })
+        .then(() => {
+          ElMessage.warning("正在提交，请稍候...");
+
+          // 收集所有子组件的数据
+          const components = [
+            this.$refs.GeneralSymptomsScore,
+            this.$refs.RespiratorySymptomsScore,
+            this.$refs.DigestiveSymptomsScore,
+            this.$refs.CirculatorySymptomsScore,
+            this.$refs.NeurologicalSymptomsScore,
+            this.$refs.LocalSymptomsScore,
+            this.$refs.OtherSymptomsScore,
+            this.$refs.RiskFactorsAndExposureScore,
+          ];
+
+          let requestData = [];
+          components.forEach((component) => {
+            if (component && component.symptoms) {
+              Object.values(component.symptoms).forEach((symptom) => {
+                if (symptom.symptomWeightingId != null) {
+                  requestData.push({
+                    symptomWeightingId: symptom.symptomWeightingId,
+                    weightScore: symptom.weightScore,
+                  });
+                }
+              });
+            }
+          });
+
+          // 调用接口
+          updateBatchWeightScoringAndDiagnosisSoring(requestData)
+            .then((response) => {
+              if (response.data.code === 1) {
+                ElMessage.success("提交成功");
+                this.visible = false;
+              } else {
+                ElMessage.error(response.data.msg || "提交失败");
+              }
+            })
+            .catch((error) => {
+              console.error("API调用出错：", error);
+              ElMessage.error("提交失败");
+            });
+        })
+        .catch(() => {
+          ElMessage.info("操作已取消");
+        });
+    },
   },
-  
 };
 </script>
-
-
-
 
 
 <style scoped>

@@ -24,3 +24,10 @@ export const updateBatchWeightScoring = async (params) => {
   const response = await axiosInstance.post("/admin/systemValueManager/updateBatchWeightScoring", params);
   return response;
 };
+
+// 更新历史预测信息
+
+export const updateBatchWeightScoringAndDiagnosisSoring= async (params) => {
+  const response = await axiosInstance.post("/admin/systemValueManager/updateBatchWeightScoringAndDiagnosisSoring", params);
+  return response;
+};

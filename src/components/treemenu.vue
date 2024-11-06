@@ -93,6 +93,10 @@
         <img src="../assets/menu_icons/hospital.svg" alt="" class="menu-icons" />
         <span>医院基础数据管理</span>
       </el-menu-item>
+      <el-menu-item index="/system/accuracy-manage">
+        <img src="../assets/menu_icons/accuracy_manage.svg" alt="" class="menu-icons" />
+        <span>准确率范围管理</span>
+      </el-menu-item>
     </el-sub-menu>
 
     <!-- 用户反馈：仅系统管理员可见 -->
@@ -157,7 +161,8 @@ export default {
         '/feedback': '用户反馈',
         '/propaganda': '宣传材料管理',
         '/satisfaction': '满意度调查',
-        '/report/accuracy' : '疾病诊断准确率报表'
+        '/report/accuracy' : '疾病诊断准确率报表',
+        '/system/accuracy-manage' :'准确率范围管理',
       };
       return menuMap[path] || '未知标题';
     }
