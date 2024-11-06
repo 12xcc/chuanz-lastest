@@ -131,7 +131,7 @@ export default {
 
             const chartAccuracy =
               diagnosisCount > 0
-                ? ((confirmedCount / diagnosisCount) * 100).toFixed(2)
+                ? (( diagnosisCount / confirmedCount) * 100).toFixed(2)
                 : "0.00";
 
             return `${diseaseName} <br/>预测数 ${diagnosisCount.toFixed(
