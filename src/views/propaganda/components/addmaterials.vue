@@ -206,6 +206,8 @@ export default {
       this.visible = false;
       this.handleReset();
     },
+
+    // 待修改
     async handleSubmit() {
       try {
         await this.$refs.form.validate();
@@ -219,7 +221,7 @@ export default {
           formData.append("link", this.form.link);
         } else {
           if (!this.form.file) throw new Error("文件不能为空");
-          
+
           const responseSrc = await uploadFile(this.form.file);
           const filePath = responseSrc.data.data;
           formData.append("filePath", filePath);

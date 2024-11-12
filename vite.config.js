@@ -58,6 +58,12 @@ export default defineConfig({
         changeOrigin: true,
         logLevel: 'debug',
       },
+      '/ai': {
+        target: 'https://ds.sccdc.cn',
+        // target: 'http://43.138.213.54:8080',
+        changeOrigin: true,
+        logLevel: 'debug',
+      },
     },
   },
 });
