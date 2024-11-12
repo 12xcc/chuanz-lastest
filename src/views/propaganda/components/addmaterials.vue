@@ -163,7 +163,7 @@ import PdfUpload from "./pdfUpload.vue";
 import ImageUpload from "./imageUpload.vue";
 import VedioUpload from "./VideoUpload.vue";
 import { saveMaterial } from "@/api/propaganda/propaganda.js";
-
+import { uploadFile } from "@/api/common.js";
 export default {
   components: {
     PdfUpload,
@@ -197,6 +197,8 @@ export default {
     };
   },
   methods: {
+
+
     showDrawer() {
       this.visible = true;
     },
@@ -212,18 +214,19 @@ export default {
         formData.append("materialType", this.form.MaterialType);
         formData.append("diseaseTypeName", this.form.diseaseTypeName);
 
-        // 根据材料类型判断是文件上传还是链接
         if (this.form.MaterialType === "网页链接") {
           if (!this.form.link) throw new Error("链接不能为空");
           formData.append("link", this.form.link);
         } else {
           if (!this.form.file) throw new Error("文件不能为空");
-          formData.append("file", this.form.file);
+          
+          const responseSrc = await uploadFile(this.form.file);
+          const filePath = responseSrc.data.data;
+          formData.append("filePath", filePath);
+          console.log("filePath",filePath);
         }
 
-        // 显示上传进度遮罩
         this.progressVisible = true;
-        console.log("Progress overlay shown.");
 
         const response = await saveMaterial(formData, {
           headers: {
@@ -250,8 +253,8 @@ export default {
       } catch (error) {
         ElMessage.error(error.message || "提交失败");
       } finally {
-        this.progressVisible = false; // 隐藏进度遮罩
-        this.uploadProgress = 0; // 重置进度
+        this.progressVisible = false; 
+        this.uploadProgress = 0;
       }
     },
     handleReset() {
@@ -266,7 +269,7 @@ export default {
     handleFileUpload(file) {
       if (file instanceof File) {
         this.form.file = file;
-        console.log("文件已上传:", this.form.file); // 调试信息
+        console.log("文件已上传:", this.form.file);
       } else {
         console.error("上传的文件无效");
       }
