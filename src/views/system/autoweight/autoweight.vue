@@ -11,7 +11,7 @@
       本项功能需要等诊断样例足够多，并经过线下离线验证后才能启用。
     </div>
     <div class="status">
-      当前：AutoAIWeightUpdater程序<span>{{ status }}</span
+      当前：AutoAIWeightUpdater程序&nbsp;&nbsp;<span class="statu">{{ status }}</span
       >。
     </div>
     <div class="button">
@@ -172,5 +172,8 @@ export default {
   font-size: 12px;
   font-weight: bold;
   color: #4a4a4a;
+}
+.statu{
+  font-size: 15px;
 }
 </style>
