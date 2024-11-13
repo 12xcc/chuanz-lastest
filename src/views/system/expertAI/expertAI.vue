@@ -19,25 +19,12 @@
       <span v-if="form.diagnosisMethod === 'ai'">{{ aiStatus }}</span>
     </div>
     <div class="button">
-      <el-tooltip v-if="form.diagnosisMethod === 'expert'" :content="expertButtonTooltip" placement="top">
         <el-button
           type="primary"
-          :disabled="expertButtonDisabled"
-          @click="handleExpertAction"
+          @click="handleAction"
         >
-          {{ expertButtonText }}
+          确认切换
         </el-button>
-      </el-tooltip>
-      <el-tooltip v-if="form.diagnosisMethod === 'ai'" :content="aiButtonTooltip" placement="top">
-        <el-button
-          type="primary"
-          plain
-          :disabled="aiButtonDisabled"
-          @click="handleAIAction"
-        >
-          {{ aiButtonText }}
-        </el-button>
-      </el-tooltip>
     </div>
   </div>
 </template>
@@ -45,127 +32,66 @@
 <script>
 import { ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-// import { systemChange } from '@/api/system/exportAi.js'
+import { systemChange,systemChangeSearch } from '@/api/system/expertAI'
 export default {
   data() {
     return {
       form: {
-        diagnosisMethod: 'expert' // 默认选项
+        diagnosisMethod: 'expert' 
       },
       expertStatus: '专家诊断未运行',
       aiStatus: 'AI诊断未运行',
-      expertButtonText: '启用',
-      aiButtonText: '启用',
-      expertButtonTooltip: '专家诊断已禁用',
-      aiButtonTooltip: 'AI诊断已禁用',
-      expertButtonDisabled: false,
-      aiButtonDisabled: false
     };
   },
   methods: {
-    async handleExpertAction() {
-      const action = this.expertButtonText === '启用' ? 'enable' : 'disable';
-      const confirmMessage = action === 'enable' ? '确认要启用专家诊断吗？' : '确认要禁用专家诊断吗？';
-      const successMessage = action === 'enable' ? '专家诊断启用成功' : '专家诊断禁用成功';
-      const failureMessage = action === 'enable' ? '专家诊断启用失败' : '专家诊断禁用失败';
+    async handleQuery() {
+      const response = await systemChangeSearch();
+      if (response.data.data === "AI诊断") {
+        this.aiStatus = "AI诊断正在运行";
+        this.expertStatus = "专家诊断未运行";
+        this.form.diagnosisMethod = 'ai';
+      } else {
+        this.expertStatus = "专家诊断正在运行";
+        this.aiStatus = "AI诊断未运行";
+        this.form.diagnosisMethod = 'expert';
+      }
+      console.log("this.form.diagnosisMethod",this.form.diagnosisMethod)
+    },
 
-      try {
-        await ElMessageBox.confirm(confirmMessage, '确认', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
+    async handleAction() {
+      ElMessageBox.confirm("是否确认切换", "确认", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          try {
+            let response;
+            if(this.form.diagnosisMethod === "expert"){
+              // 传false 切换为专家诊断
+              response = await systemChange(false);
+            }else{
+              response = await systemChange(true);
+            }
+            if (response.data.code === 1) {
+              this.$message.success("切换成功");
+              this.handleQuery();
+            } else {
+              this.$message.error("切换失败");
+              
+            }
+          } catch (error) {
+            console.error("Error toggling status:", error);
+            this.$message.error("切换失败，请重试！");
+          }
+        })
+        .catch(() => {
+          // 取消
         });
-        if (action === 'enable') {
-          this.enableExpert(successMessage, failureMessage);
-        } else {
-          this.disableExpert(successMessage, failureMessage);
-        }
-      } catch {
-        //取消
-      }
     },
-
-    async handleAIAction() {
-      const action = this.aiButtonText === '启用' ? 'enable' : 'disable';
-      const confirmMessage = action === 'enable' ? '确认要启用AI诊断吗？' : '确认要禁用AI诊断吗？';
-      const successMessage = action === 'enable' ? 'AI诊断启用成功' : 'AI诊断禁用成功';
-      const failureMessage = action === 'enable' ? 'AI诊断启用失败' : 'AI诊断禁用失败';
-
-      try {
-        await ElMessageBox.confirm(confirmMessage, '确认', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        });
-        if (action === 'enable') {
-          this.enableAI(successMessage, failureMessage);
-        } else {
-          this.disableAI(successMessage, failureMessage);
-        }
-      } catch {
-        // 取消
-      }
-    },
-
-    enableExpert(successMessage, failureMessage) {
-      // 模拟启用操作
-      const success = Math.random() > 0.2; // 80% 可能成功
-
-      if (success) {
-        this.expertStatus = '专家诊断正在运行';
-        this.expertButtonText = '禁用';
-        this.expertButtonTooltip = '专家诊断已启用';
-        this.expertButtonDisabled = false;
-        ElMessage.success(successMessage);
-      } else {
-        ElMessage.error(failureMessage);
-      }
-    },
-
-    disableExpert(successMessage, failureMessage) {
-      // 模拟禁用操作
-      const success = Math.random() > 0.2; // 80% 可能成功
-
-      if (success) {
-        this.expertStatus = '专家诊断未运行';
-        this.expertButtonText = '启用';
-        this.expertButtonTooltip = '专家诊断已禁用';
-        this.expertButtonDisabled = false;
-        ElMessage.success(successMessage);
-      } else {
-        ElMessage.error(failureMessage);
-      }
-    },
-
-    enableAI(successMessage, failureMessage) {
-      // 模拟启用操作
-      const success = Math.random() > 0.2; // 80% 可能成功
-
-      if (success) {
-        this.aiStatus = 'AI诊断正在运行';
-        this.aiButtonText = '禁用';
-        this.aiButtonTooltip = 'AI诊断已启用';
-        this.aiButtonDisabled = false;
-        ElMessage.success(successMessage);
-      } else {
-        ElMessage.error(failureMessage);
-      }
-    },
-
-    disableAI(successMessage, failureMessage) {
-      // 模拟禁用操作
-      const success = Math.random() > 0.2; // 80% 可能成功
-
-      if (success) {
-        this.aiStatus = 'AI诊断未运行';
-        this.aiButtonText = '启用';
-        this.aiButtonTooltip = 'AI诊断已禁用';
-        this.aiButtonDisabled = false;
-        ElMessage.success(successMessage);
-      } else {
-        ElMessage.error(failureMessage);
-      }
-    }
+  },
+    mounted(){
+    this.handleQuery();
   }
 };
 </script>
