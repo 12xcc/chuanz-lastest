@@ -413,6 +413,8 @@
 import { ElMessage } from "element-plus";
 import Dateselection from "@/components/date.vue";
 import axiosInstance from "@/utils/axiosInstance.js";
+// 导入封装的接口 暂时没用到
+// import { addOneUser } from "@/api/user/alluser.js" 
 export default {
   components: {
     Dateselection,
@@ -650,18 +652,19 @@ export default {
               workOnPlateauStartDate: this.form.WorkOnPlateauStartDate,
             };
 
-            // 调用接口提交用户信息
+            // 直接调接口提交用户信息
             const response = await axiosInstance.post(
               "/admin/userManager/addOneUser",
-              requestData, // 请求体
+              requestData,
               {
                 headers: {
                   "Content-Type": "application/json", // 请求头
                 },
               }
             );
-
-            // 判断响应
+            // 调封装的接口
+            // const response = await addOneUser(requestData);
+            // 判断响应 
             if (response.data.code === 1) {
               ElMessage({
                 message: "提交成功",

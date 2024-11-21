@@ -69,9 +69,10 @@
 <script>
 import { ref } from "vue";
 import { ElMessage } from "element-plus";
-import { changePassword } from "@/api/login.js"; // 引入修改密码 API
-import passwordOpenIcon from "@/assets/password_open.png";  // 确保路径正确
-import passwordCloseIcon from "@/assets/password_close.png";  // 确保路径正确
+import { changePassword } from "@/api/login.js"; 
+import passwordOpenIcon from "@/assets/password_open.png"; 
+import passwordCloseIcon from "@/assets/password_close.png";
+
 
 export default {
   setup() {
@@ -152,8 +153,8 @@ export default {
       oldPasswordError,
       newPasswordError,
       confirmPasswordError,
-      passwordOpenIcon, // 确保模板中引用了正确的变量
-      passwordCloseIcon, // 确保模板中引用了正确的变量
+      passwordOpenIcon,
+      passwordCloseIcon,
       togglePasswordVisibility,
       handleSubmit,
       validateAndFormatOldPassword,

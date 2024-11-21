@@ -87,3 +87,17 @@ export const queryAllUserToExcel = async () => {
   });
   return response;
 };
+
+// 添加单个用户
+export const addOneUser = async (requestData) => {
+  const response = await axiosInstance.post(
+    "/admin/userManager/addOneUser",
+    requestData,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response;
+};
