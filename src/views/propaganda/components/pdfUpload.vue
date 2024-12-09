@@ -50,13 +50,14 @@
     </div>
 
     <!-- PDF 预览弹窗 -->
-    <el-dialog v-model="dialogVisible" class="custom-dialog" :modal="true">
-      <iframe
+    <el-dialog v-model="dialogVisible" class="video-container" :modal="true">
+      <!-- <iframe
         v-if="dialogPdfUrl"
         :src="dialogPdfUrl"
         class="pdf-preview"
         frameborder="0"
-      ></iframe>
+      ></iframe> -->
+      <!-- <div>文章pdf下载中，请稍候...</div> -->
     </el-dialog>
   </div>
 </template>
@@ -97,8 +98,9 @@ onMounted(() => {
 
 // 预览 PDF
 const handlePdfPreview = (file) => {
-  dialogPdfUrl.value = file.url || URL.createObjectURL(file.raw);
-  dialogVisible.value = true;
+  // dialogVisible.value = true; // 打开对话框
+  const pdfUrl = file.url || URL.createObjectURL(file.raw);
+  window.location.href = pdfUrl;  // 使用 location.href 跳转到视频链接
 };
 
 // 删除 PDF
@@ -158,6 +160,13 @@ const handleFileChange = (file, fileList) => {
   height: 70%;
   object-fit: contain;
   border-radius: 5px;
+}
+.video-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; 
+    height: auto; 
 }
 
 .filestyle {

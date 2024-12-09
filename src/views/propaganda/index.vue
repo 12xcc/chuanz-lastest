@@ -87,8 +87,15 @@
         <el-table-column type="selection" width="55" />
         <el-table-column prop="SequenceNumber" label="序号" width="80" />
         <el-table-column prop="MaterialType" label="宣传材料类型" width="120" />
-        <el-table-column prop="Title" label="标题" width="220" />
-        <el-table-column prop="FilePath" label="文件路径" width="120" />
+        <el-table-column prop="Title" label="标题" width="320" />
+        <!-- <el-table-column prop="FilePath" label="文件路径" width="120" /> -->
+        <el-table-column prop="Link" label="文件路径" width="200">
+          <template #default="scope">
+            <el-button link type="primary" @click="openLink(scope.row.FilePath)">
+              {{ scope.row.FilePath }}
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column prop="Link" label="网页链接" width="200">
           <template #default="scope">
             <el-button link type="primary" @click="openLink(scope.row.Link)">

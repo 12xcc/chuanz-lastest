@@ -197,8 +197,6 @@ export default {
     };
   },
   methods: {
-
-
     showDrawer() {
       this.visible = true;
     },
@@ -212,20 +210,32 @@ export default {
       try {
         await this.$refs.form.validate();
         const formData = new FormData();
+        const formFile = new FormData();
         formData.append("title", this.form.Title);
         formData.append("materialType", this.form.MaterialType);
         formData.append("diseaseTypeName", this.form.diseaseTypeName);
-
         if (this.form.MaterialType === "网页链接") {
           if (!this.form.link) throw new Error("链接不能为空");
           formData.append("link", this.form.link);
         } else {
           if (!this.form.file) throw new Error("文件不能为空");
+          formFile.append("file", this.form.file);
+          console.log("this.form.file:", this.form.file);
+          this.progressVisible = true;
+          const responseSrc = await uploadFile(formFile, {
+            onUploadProgress: (progressEvent) => {
+              if (progressEvent.lengthComputable) {
+                this.uploadProgress = Math.round(
+                  (progressEvent.loaded * 100) / progressEvent.total
+                );
+                console.log(`Upload progress: ${this.uploadProgress}%`);
+              }
+            },
+          });
 
-          const responseSrc = await uploadFile(this.form.file);
           const filePath = responseSrc.data.data;
           formData.append("filePath", filePath);
-          console.log("filePath",filePath);
+          console.log("filePath", filePath);
         }
 
         this.progressVisible = true;
@@ -234,14 +244,14 @@ export default {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-          onUploadProgress: (progressEvent) => {
-            if (progressEvent.lengthComputable) {
-              this.uploadProgress = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              console.log(`Upload progress: ${this.uploadProgress}%`);
-            }
-          },
+          // onUploadProgress: (progressEvent) => {
+          //   if (progressEvent.lengthComputable) {
+          //     this.uploadProgress = Math.round(
+          //       (progressEvent.loaded * 100) / progressEvent.total
+          //     );
+          //     console.log(`Upload progress: ${this.uploadProgress}%`);
+          //   }
+          // },
         });
 
         if (response.data.code === 1) {
@@ -255,7 +265,7 @@ export default {
       } catch (error) {
         ElMessage.error(error.message || "提交失败");
       } finally {
-        this.progressVisible = false; 
+        this.progressVisible = false;
         this.uploadProgress = 0;
       }
     },

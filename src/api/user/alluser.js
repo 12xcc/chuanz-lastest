@@ -11,14 +11,14 @@ export const fetchUserData = async (params) => {
 // 切换用户状态
 export const toggleUserStatus = async (userId) => {
   const url = `/admin/userManager/changeUserActive/${userId}`;
-  const response = await axiosInstance.put(url);
+  const response = await axiosInstance.get(url);
   return response;
 };
 
 // 初始化用户密码
 export const initializeUserPassword = async (userId) => {
   const url = `/admin/userManager/initPassword/${userId}`;
-  const response = await axiosInstance.put(url);
+  const response = await axiosInstance.get(url);
   return response;
 };
 
@@ -75,7 +75,7 @@ export const updateUserInfo = async (requestData) => {
 };
 
 // 修改密码
-`/medicalStaff/userpPassword/change`
+// `/medicalStaff/userpPassword/change`
 
 // 下载导入模板
 export const queryAllUserToExcel = async () => {

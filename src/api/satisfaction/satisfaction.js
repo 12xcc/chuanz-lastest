@@ -12,7 +12,7 @@ export const addSatisfactionSurvey = async (data) => {
 
 // 根据ID关闭满意度调查
 export const closeSatisfaction = async (surveyID) => {
-  const response = await axiosInstance.put(
+  const response = await axiosInstance.get(
     `/admin/satisfaction/closeSatisfaction/${surveyID}`
   );
   return response;
@@ -20,7 +20,7 @@ export const closeSatisfaction = async (surveyID) => {
 
 // 根据ID开放满意度调查
 export const openSatisfaction = async (surveyID) => {
-  const response = await axiosInstance.put(
+  const response = await axiosInstance.get(
     `/admin/satisfaction/openSatisfaction/${surveyID}`
   );
   return response;

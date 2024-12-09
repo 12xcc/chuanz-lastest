@@ -231,42 +231,43 @@ export default {
           this.form.MaterialType = data.materialType;
           this.form.Link = data.link;
           this.form.diseaseTypeName = data.diseaseTypeName;
+          this.form.filePath = data.filePath;
+          console.log("filePath:",this.form.filePath);
+          // // const baseUrl = "http://43.138.213.55:8080";
+          // const baseUrl = "https://ds.sccdc.cn";
 
-          // const baseUrl = "http://43.138.213.55:8080";
-          const baseUrl = "https://ds.sccdc.cn";
+          // // 判断文件后缀并拼接文件路径
+          // if (data.filePath) {
+          //   const fileExtension = data.filePath.split(".").pop().toLowerCase();
 
-          // 判断文件后缀并拼接文件路径
-          if (data.filePath) {
-            const fileExtension = data.filePath.split(".").pop().toLowerCase();
-
-            if (["jpg", "png", "jpeg"].includes(fileExtension)) {
-              // 图片类型
-              this.form.filePath = `${baseUrl}/common/file/getLearningMaterialFile/${data.filePath}`;
-              if (this.form.MaterialType !== "图片") {
-                // 如果当前材料类型不是图片，清空 filePath
-                this.form.filePath = "";
-              }
-            } else if (fileExtension === "pdf") {
-              // 文章类型
-              this.form.filePath = `${baseUrl}/common/file/getLearningMaterialFile/${data.filePath}`;
-              if (this.form.MaterialType !== "文章") {
-                // 如果当前材料类型不是文章，清空 filePath
-                this.form.filePath = "";
-              }
-            } else if (fileExtension === "mp4") {
-              // 视频类型
-              this.form.filePath = `${baseUrl}/common/file/getLearningMaterialFile/${data.filePath}`;
-              if (this.form.MaterialType !== "视频") {
-                // 如果当前材料类型不是视频，清空 filePath
-                this.form.filePath = "";
-              }
-            } else {
-              // 其他文件类型，不显示
-              this.form.filePath = "";
-            }
-          } else {
-            this.form.filePath = ""; // 没有文件路径时清空 filePath
-          }
+          //   if (["jpg", "png", "jpeg"].includes(fileExtension)) {
+          //     // 图片类型
+          //     this.form.filePath = `${baseUrl}/common/file/getLearningMaterialFile/${data.filePath}`;
+          //     if (this.form.MaterialType !== "图片") {
+          //       // 如果当前材料类型不是图片，清空 filePath
+          //       this.form.filePath = "";
+          //     }
+          //   } else if (fileExtension === "pdf") {
+          //     // 文章类型
+          //     this.form.filePath = `${baseUrl}/common/file/getLearningMaterialFile/${data.filePath}`;
+          //     if (this.form.MaterialType !== "文章") {
+          //       // 如果当前材料类型不是文章，清空 filePath
+          //       this.form.filePath = "";
+          //     }
+          //   } else if (fileExtension === "mp4") {
+          //     // 视频类型
+          //     this.form.filePath = `${baseUrl}/common/file/getLearningMaterialFile/${data.filePath}`;
+          //     if (this.form.MaterialType !== "视频") {
+          //       // 如果当前材料类型不是视频，清空 filePath
+          //       this.form.filePath = "";
+          //     }
+          //   } else {
+          //     // 其他文件类型，不显示
+          //     this.form.filePath = "";
+          //   }
+          // } else {
+          //   this.form.filePath = ""; // 没有文件路径时清空 filePath
+          // }
         } else {
           console.error("获取资料信息失败:", response.data.msg);
         }
@@ -291,11 +292,11 @@ export default {
     async handleSubmit() {
       console.log("Submitting..."); // 调试信息
 
-      // 从 filePath 中去掉前缀
-      const filePath = this.form.filePath.replace(
-        "https://ds.sccdc.cn/common/file/getLearningMaterialFile/",
-        ""
-      );
+      // // 从 filePath 中去掉前缀
+      // const filePath = this.form.filePath.replace(
+      //   "https://ds.sccdc.cn/common/file/getLearningMaterialFile/",
+      //   ""
+      // );
 
       try {
         const params = {

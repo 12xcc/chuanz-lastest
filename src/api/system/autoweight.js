@@ -2,13 +2,13 @@ import axiosInstance from "@/utils/axiosInstance.js";
 
 // 立即执行自动更新
 export const startAI = async () => {
-  const response = await axiosInstance.put("/ai/startAI");
+  const response = await axiosInstance.get("/ai/startAI");
   return response;
 };
 
 // 启用/禁用自动更新
 export const updateAutoAIWeightUpdater = async (autoAIWeightUpdater) => {
-  const response = await axiosInstance.put(
+  const response = await axiosInstance.get(
     `/ai/updateAutoAIWeightUpdater/${autoAIWeightUpdater}`
   );
   return response;

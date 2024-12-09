@@ -16,18 +16,18 @@ export const pageSelectDiseaseLearningMaterials = async (params) => {
 
 // 切换材料状态
 export const startOrStopMaterial = async (materialId, isDelete) => {
-  const response = await axiosInstance.put(
-    "/cdcStaff/promotionalMaterialsManager/startOrStopMaterial",
-    null,
+  const queryParams = new URLSearchParams({ materialId, isDelete }).toString(); 
+  const response = await axiosInstance.get(
+    `/cdcStaff/promotionalMaterialsManager/startOrStopMaterial?${queryParams}`, 
     {
-      params: { materialId, isDelete }, // 传递参数
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded", 
       },
     }
   );
   return response;
 };
+
 
 // 根据id获取宣传材料
 export const getMaterialById = async (materialId) => {

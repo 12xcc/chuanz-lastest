@@ -79,7 +79,7 @@ export const getstrike = async () => {
 
 // 更改准确率参数
 export const JudgmentsPredictorNumber = async (range) => {
-  const response = await axiosInstance.put(
+  const response = await axiosInstance.get(
     `/cdcStaff/statisticsDiagnosticAccuracy/JudgmentsPredictorNumber/${range}`
   );
   return response;
