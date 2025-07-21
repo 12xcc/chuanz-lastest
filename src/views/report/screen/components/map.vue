@@ -12,43 +12,58 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { getUserStation } from "@/api/report/screen.js";
 
-onMounted(async () => {
-  const map = new AMap.Map('mapContainer', {
-    zoom: 3.6, 
-    center: [104.0668, 30.5728]  
+const props = defineProps({
+  queryDate: {
+    type: String,
+    required: true
+  }
+});
+
+let map = null;
+let heatmap = null;
+
+onMounted(() => {
+  map = new AMap.Map('mapContainer', {
+    zoom: 3.6,
+    center: [104.0668, 30.5728]
   });
 
-  map.plugin(['AMap.HeatMap'], async () => {
-    const heatmap = new AMap.HeatMap(map, {
+  map.plugin(['AMap.HeatMap'], () => {
+    heatmap = new AMap.HeatMap(map, {
       radius: 25,
       opacity: [0, 0.8]
     });
-
-    try {
-      const response = await getUserStation();
-      if (response.data.code === 1) {
-        const heatmapData = response.data.data.map(item => ({
-          lng: item.longitude,
-          lat: item.latitude,
-          count: 100  // 示例数量，您可以根据实际数据调整
-        }));
-
-        heatmap.setDataSet({
-          data: heatmapData,
-          max: 100
-        });
-      } else {
-        console.error("获取用户地理位置数据失败:", response.data.msg);
-      }
-    } catch (error) {
-      console.error("请求出错:", error);
-    }
   });
 });
+
+watch(() => props.queryDate, async (newDate) => {
+  if (!newDate || !heatmap) return;
+
+  try {
+    const response = await getUserStation(newDate);
+    if (response.data.code === 1) {
+      const heatmapData = response.data.data.map(item => ({
+        lng: item.longitude,
+        lat: item.latitude,
+        count: 100  // 你可以根据需要调整权重
+      }));
+
+      heatmap.setDataSet({
+        data: heatmapData,
+        max: 100
+      });
+    } else {
+      console.error("获取用户地理位置数据失败:", response.data.msg);
+    }
+  } catch (error) {
+    console.error("请求出错:", error);
+  }
+}, { immediate: true });
 </script>
+
 
 
 <style scoped>

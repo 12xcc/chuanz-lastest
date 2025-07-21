@@ -1,6 +1,23 @@
 <template>
   <div class="container">
     <div class="title">疾病诊断准确率报表</div>
+    <el-form :inline="true" class="demo-form-inline" style="margin-top: 20px; margin-left: 20px; margin-bottom: -20px">
+      <el-form-item label="选择时间范围">
+        <el-date-picker
+          v-model="dateRange"
+          type="daterange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
+        >
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="fetchDiagnosticAccuracy">确 定</el-button>
+      </el-form-item>
+    </el-form>
     <div class="cards-container">
       <div class="card-container">
         <div class="card" v-for="(item, index) in cardData" :key="index">
@@ -31,13 +48,9 @@ import {
 } from "echarts/components";
 import { BarChart } from "echarts/charts";
 import { CanvasRenderer } from "echarts/renderers";
-import { CountUp } from "countup.js";
-import allusernumber from "@/assets/screenimgs/allusernumber.svg";
 import allcheckinnumber from "@/assets/screenimgs/allcheckinnumber.svg";
-import todaycheckin from "@/assets/screenimgs/todaycheckin.svg";
 import todayhealth from "@/assets/screenimgs/todayhealth.svg";
 import todaydisease from "@/assets/screenimgs/todaydisease.svg";
-import todaynotcheckin from "@/assets/screenimgs/todaynotcheckin.svg";
 import { getstrike } from "@/api/report/screen.js";
 
 echarts.use([
@@ -48,6 +61,13 @@ echarts.use([
   LegendComponent,
 ]);
 
+function formatDate(date) {
+  const y = date.getFullYear();
+  const m = (date.getMonth() + 1).toString().padStart(2, "0");
+  const d = date.getDate().toString().padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 export default {
   setup() {
     const cardData = ref([
@@ -57,6 +77,7 @@ export default {
     ]);
 
     const chart = ref(null);
+    const dateRange = ref([]); // 时间范围绑定变量
 
     const updateChart = (data) => {
       const diseaseTypeName = [
@@ -131,7 +152,7 @@ export default {
 
             const chartAccuracy =
               diagnosisCount > 0
-                ? (( diagnosisCount / confirmedCount) * 100).toFixed(2)
+                ? ((diagnosisCount / confirmedCount) * 100).toFixed(2)
                 : "0.00";
 
             return `${diseaseName} <br/>预测数 ${diagnosisCount.toFixed(
@@ -190,55 +211,71 @@ export default {
       });
     };
 
-    onMounted(async () => {
+    const fetchDiagnosticAccuracy = async () => {
       try {
-        const response = await getstrike();
-        console.log("API Response:", response);
-        console.log("response.data.data:", response.data.data);
-        if (response.data.code === 1 && response.data) {
-          cardData.value[0].data = response.data.data.confirmedNumber || 0;
-          cardData.value[1].data = response.data.data.diagnosedNumber || 0;
-          console.log(" cardData.value[0].data:", cardData.value[0].data);
-          console.log(" cardData.value[1].data:", cardData.value[1].data);
+        let startDate, endDate;
+        if (dateRange.value && dateRange.value.length === 2) {
+          startDate = dateRange.value[0];
+          endDate = dateRange.value[1];
+        } else {
+          const now = new Date();
+          endDate = formatDate(now);
+          const lastYear = new Date(now);
+          lastYear.setFullYear(now.getFullYear() - 1);
+          startDate = formatDate(lastYear);
+        }
 
-          // 总的准确率计算
+        console.log("查询时间范围参数：", startDate, endDate);
+
+        // 确保 getstrike 接口传参格式是 { params: { startDate, endDate } }
+        const response = await getstrike({ startDate, endDate });
+
+        if (response.data.code === 1 && response.data.data) {
+          const result = response.data.data;
+
+          cardData.value[0].data = result.confirmedNumber || 0;
+          cardData.value[1].data = result.diagnosedNumber || 0;
+
           let totalPredictDiagnoseNumber = 0;
           let totalActuallyDiagnoseNumber = 0;
 
-          response.data.data.list.forEach((item) => {
+          result.list.forEach((item) => {
             totalPredictDiagnoseNumber += item.predictDiagnoseNumber || 0;
             totalActuallyDiagnoseNumber += item.actuallyDiagnoseNumber || 0;
           });
 
           const accuracy =
-            totalPredictDiagnoseNumber > 0
+            totalActuallyDiagnoseNumber > 0
               ? (
-                  (totalPredictDiagnoseNumber/  totalActuallyDiagnoseNumber ) *
+                  (totalPredictDiagnoseNumber / totalActuallyDiagnoseNumber) *
                   100
                 ).toFixed(2)
               : "0.00";
 
           cardData.value[2].data = accuracy + "%";
-          // if (parseFloat(cardData.value[2].data) > 100) {
-          //   cardData.value[2].data = "-%";
-          // }
-          // if (parseFloat(cardData.value[2].data) < 100) {
-          //   cardData.value[2].data = "-%";
-          // }
-          updateChart(response.data.data);
+
+          updateChart(result);
         } else {
-          console.error("Failed to fetch data:", response);
+          console.error("查询失败：", response);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("接口异常：", error);
       }
+    };
+
+    onMounted(() => {
+      fetchDiagnosticAccuracy(); // 默认加载一年内数据
     });
 
-    return { cardData, chart };
+    return {
+      cardData,
+      chart,
+      dateRange,
+      fetchDiagnosticAccuracy,
+    };
   },
 };
 </script>
-
 
 
 
@@ -253,7 +290,7 @@ export default {
 }
 
 .title-container {
-  margin-top: 30px;
+  margin-top: 20px;
   margin-left: 10px;
   align-items: center;
 }
@@ -303,7 +340,7 @@ export default {
 }
 
 .cards-container {
-  margin-top: 50px;
+  margin-top: 30px;
   width: 100%;
   height: 150px;
   margin-bottom: 5px;

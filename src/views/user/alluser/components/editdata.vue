@@ -24,18 +24,19 @@
         :rules="rules"
       >
         <!-- 用户类型 -->
-        <el-form-item label="用户类型" prop="userType" size="default">
+        <el-form-item label="用户类型" prop="userType" size="default" >
           <el-select
             v-model="form.userType"
             placeholder="请选择用户类型"
             clearable
             size="default"
             style="width: 200px"
+            disabled
           >
-            <el-option :key="1" label="系统管理员" :value="1"></el-option>
-            <el-option :key="2" label="铁路职工" :value="2"></el-option>
-            <el-option :key="3" label="疾控中心工作人员" :value="3"></el-option>
-            <el-option :key="4" label="专职医护" :value="4"></el-option>
+            <el-option :key="1" label="系统管理员" :value="'系统管理员'"></el-option>
+            <el-option :key="2" label="铁路职工" :value="'铁路职工'"></el-option>
+            <el-option :key="3" label="疾控中心工作人员" :value="'疾控中心工作人员'"></el-option>
+            <el-option :key="4" label="专职医护" :value="'专职医护'"></el-option>
           </el-select>
         </el-form-item>
 

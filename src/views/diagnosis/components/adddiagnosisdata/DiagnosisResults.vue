@@ -22,6 +22,7 @@
           <el-form-item label="诊断日期" prop="diagnosisDate" style="margin-left: 20px">
             <el-date-picker
               format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
               v-model="form.diagnosisDate"
               type="date"             
               placeholder=""
